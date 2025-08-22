@@ -83,6 +83,7 @@ export function BedDualZone({
     border: '1px solid',
     borderColor: 'divider',
     display: 'inline-flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     transition:
