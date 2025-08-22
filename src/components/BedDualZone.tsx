@@ -42,7 +42,10 @@ export interface BedDualZoneProps {
   editingSide?: Side | null;
   /** Callback fired when a side is clicked. */
   onSideClick?: (side: Side) => void;
-  /** Width of the rendered bed in pixels (default 360). */
+  /**
+   * Maximum width of the rendered bed in pixels (default 360). The bed scales
+   * down responsively on smaller screens.
+   */
   width?: number;
   /** Optional labels displayed beneath each zone. */
   labels?: { left?: string; right?: string };
@@ -128,7 +131,9 @@ export function BedDualZone({
       role="radiogroup"
       aria-label="Bed zones"
       sx={{
-        width,
+        width: '100%',
+        maxWidth: width,
+        mx: 'auto',
         fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial',
         ...sx,
       }}
@@ -146,12 +151,12 @@ export function BedDualZone({
                   theme.palette.grey[800],
                   0.6,
                 )})`
-              : 'linear-gradient(145deg,#e0d5c0,#c6b49e)',
+              : 'linear-gradient(180deg,#f5f5f5,#dcdcdc)',
           boxShadow:
             theme.palette.mode === 'dark'
               ? '0 4px 12px rgba(0,0,0,0.5)'
               : '0 4px 12px rgba(0,0,0,0.15)',
-          aspectRatio: '7 / 4',
+          aspectRatio: '3 / 4',
           overflow: 'hidden',
         }}
       >
@@ -244,7 +249,7 @@ export function BedDualZone({
                   position: 'absolute',
                   top: 8,
                   left: 10,
-                  fontSize: 11,
+                  fontSize: { xs: 10, sm: 11 },
                   lineHeight: 1,
                   px: 1,
                   py: 0.5,
@@ -267,7 +272,10 @@ export function BedDualZone({
               </Typography>
 
               {/* Temperature display */}
-              <Typography component="span" sx={{ fontSize: 32, fontWeight: 600 }}>
+              <Typography
+                component="span"
+                sx={{ fontSize: { xs: 24, sm: 32 }, fontWeight: 600 }}
+              >
                 {state.currentTemp}°
               </Typography>
               {state.mode !== 'off' && state.targetTemp !== undefined && (
@@ -286,7 +294,7 @@ export function BedDualZone({
                     bottom: 8,
                     left: '50%',
                     transform: 'translateX(-50%)',
-                    fontSize: 11,
+                    fontSize: { xs: 9, sm: 11 },
                     px: 0.75,
                     py: 0.25,
                     borderRadius: 8,
