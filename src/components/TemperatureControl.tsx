@@ -46,6 +46,7 @@ export function TemperatureControl({
   const frame = React.useRef<number>();
   const isFirst = React.useRef(true);
   const prevValue = React.useRef(value);
+  const suppressScroll = React.useRef(false);
 
   const keyFor = React.useCallback((n: number) => n.toFixed(5), []);
 
@@ -85,6 +86,7 @@ export function TemperatureControl({
   );
 
   const adjust = (delta: number) => {
+    suppressScroll.current = true;
     let next = value + delta;
     if (next < min) {
       next = min;
@@ -96,6 +98,9 @@ export function TemperatureControl({
     next = snap(next);
     onChange(next);
     scrollToValue(next, true);
+    setTimeout(() => {
+      suppressScroll.current = false;
+    }, 300);
   };
 
   React.useEffect(() => {
@@ -108,7 +113,7 @@ export function TemperatureControl({
   }, [value, scrollToValue]);
 
   const handleScroll = () => {
-    if (!containerRef.current) return;
+    if (suppressScroll.current || !containerRef.current) return;
     if (frame.current) cancelAnimationFrame(frame.current);
     frame.current = requestAnimationFrame(() => {
       const container = containerRef.current!;
