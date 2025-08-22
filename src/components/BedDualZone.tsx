@@ -237,9 +237,9 @@ export function BedDualZone({
                   borderRadius:
                     key === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
                   background: `linear-gradient(180deg, ${alpha(
-                    theme.palette.grey[400],
-                    0.9,
-                  )}, ${alpha(theme.palette.grey[600], 0.9)})`,
+                    theme.palette.background.paper,
+                    0.95,
+                  )}, ${alpha(theme.palette.grey[800], 0.9)})`,
                   border: '1px solid',
                   borderColor: 'divider',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
