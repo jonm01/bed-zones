@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Box, ButtonBase, Typography } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { formatTemp } from '@/utils/temperature';
 
 type Side = 'left' | 'right';
 type Mode = 'off' | 'cool' | 'heat';
@@ -134,11 +135,6 @@ export function BedDualZone({
     },
     zIndex: 2,
   } as const;
-
-  const formatTemp = (t: number) =>
-    unit === 'C'
-      ? Math.round(((t - 32) * 5) / 9 * 2) / 2
-      : Math.round(t * 10) / 10;
 
   const unitLabel = `°${unit}`;
 
@@ -284,7 +280,7 @@ export function BedDualZone({
                   textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                 }}
               >
-                {formatTemp(state.currentTemp)}{unitLabel}
+                {formatTemp(state.currentTemp, unit)}{unitLabel}
               </Typography>
 
               {state.mode !== 'off' && state.targetTemp !== undefined && (
@@ -301,9 +297,10 @@ export function BedDualZone({
                   }}
                 >
                   {state.currentTemp === state.targetTemp
-                    ? `Maintaining ${formatTemp(state.targetTemp)}${unitLabel}`
+                    ? `Maintaining ${formatTemp(state.targetTemp, unit)}${unitLabel}`
                     : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
                         state.targetTemp,
+                        unit,
                       )}${unitLabel}`}
                 </Typography>
               )}
