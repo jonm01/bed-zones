@@ -44,10 +44,20 @@ export function TemperatureControl({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const itemRefs = React.useRef(new Map<number, HTMLDivElement>());
   const frame = React.useRef<number>();
+  const isFirst = React.useRef(true);
+  const prevValue = React.useRef(value);
 
-  const adjust = (delta: number) => {
-    const next = Math.min(max, Math.max(min, value + delta));
-    onChange(next);
+  const bounce = (dir: 'min' | 'max') => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.animate(
+      [
+        { transform: 'translateY(0)' },
+        { transform: `translateY(${dir === 'min' ? 12 : -12}px)` },
+        { transform: 'translateY(0)' },
+      ],
+      { duration: 300, easing: 'cubic-bezier(.34,1.56,.64,1)' },
+    );
   };
 
   const scrollToValue = React.useCallback(
@@ -61,8 +71,26 @@ export function TemperatureControl({
     [],
   );
 
+  const adjust = (delta: number) => {
+    let next = value + delta;
+    if (next < min) {
+      next = min;
+      bounce('min');
+    } else if (next > max) {
+      next = max;
+      bounce('max');
+    }
+    onChange(next);
+    scrollToValue(next, true);
+  };
+
   React.useEffect(() => {
-    scrollToValue(value, false);
+    if (prevValue.current !== value) {
+      navigator.vibrate?.(5);
+      prevValue.current = value;
+    }
+    scrollToValue(value, !isFirst.current);
+    isFirst.current = false;
   }, [value, scrollToValue]);
 
   const handleScroll = () => {
@@ -84,6 +112,12 @@ export function TemperatureControl({
         }
       });
       if (closest !== value) onChange(closest);
+
+      const atTop = container.scrollTop <= 0;
+      const atBottom = container.scrollTop >= container.scrollHeight - container.clientHeight;
+      if ((atTop && closest === min) || (atBottom && closest === max)) {
+        bounce(atTop ? 'min' : 'max');
+      }
     });
   };
 
@@ -100,6 +134,9 @@ export function TemperatureControl({
             height: '100%',
             overflowY: 'auto',
             scrollSnapType: 'y mandatory',
+            WebkitOverflowScrolling: 'touch',
+            maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
             '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
@@ -117,9 +154,10 @@ export function TemperatureControl({
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
-                borderRadius: 1,
-                bgcolor: n === value ? 'primary.main' : 'transparent',
-                color: n === value ? 'primary.contrastText' : 'text.primary',
+                borderRadius: 2,
+                border: '2px solid',
+                borderColor: n === value ? 'primary.main' : 'transparent',
+                fontWeight: n === value ? 600 : 400,
               }}
             >
               <Typography>{n}</Typography>
@@ -127,20 +165,6 @@ export function TemperatureControl({
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
-        <Box
-          sx={{
-            pointerEvents: 'none',
-            position: 'absolute',
-            top: '50%',
-            left: 0,
-            width: '100%',
-            height: 40,
-            transform: 'translateY(-50%)',
-            borderTop: '1px solid',
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-          }}
-        />
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
       <IconButton onClick={() => adjust(step)}>
