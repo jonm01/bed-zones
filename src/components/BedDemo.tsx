@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Stack, Button, Tabs, Tab } from '@mui/material';
+import { Stack, Button, Tabs, Tab, FormControlLabel, Switch } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
+import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
 
@@ -41,11 +42,18 @@ export default function BedDemo() {
         : { ...z, schedule: { running: true } },
     );
 
+  const { mode, toggleMode } = React.useContext(ColorModeContext);
+
   return (
     <Stack
       spacing={2}
       sx={{ p: 2, maxWidth: 360, mx: 'auto', height: '100vh', justifyContent: 'center' }}
     >
+      <FormControlLabel
+        control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
+        label="Dark mode"
+        sx={{ alignSelf: 'flex-end', mr: 0 }}
+      />
       <BedDualZone
         left={zones.left}
         right={zones.right}

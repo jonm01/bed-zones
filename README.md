@@ -12,6 +12,7 @@ is highlighted and can be changed by clicking the opposite zone.
 - **Schedule awareness**: shows if a schedule is running or when today's schedule starts
 - **Single-side editing** with tabbed controls that switch when a zone is clicked
 - **Responsive design** that scales to mobile and desktop screens with a natural bed frame
+- **Dark mode** support with a demo toggle
 
 ## Demo
 
