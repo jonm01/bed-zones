@@ -245,30 +245,43 @@ export function BedDualZone({
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
                   pointerEvents: 'none',
                   zIndex: 0,
-                }}
-              />
-              {/* Side label */}
-              <Typography
-                component="span"
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 10,
-                  fontSize: { xs: 10, sm: 11 },
-                  lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   px: 1,
-                  py: 0.5,
-                  borderRadius: 999,
-                  bgcolor: alpha(theme.palette.background.default, 0.95),
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backdropFilter: 'blur(2px)',
-                  zIndex: 1,
-                  userSelect: 'none',
                 }}
               >
-                {name}
-              </Typography>
+                <Typography
+                  component="span"
+                  sx={{
+                    fontSize: { xs: 10, sm: 11 },
+                    lineHeight: 1,
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 999,
+                    bgcolor: alpha(theme.palette.background.default, 0.95),
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    backdropFilter: 'blur(2px)',
+                    userSelect: 'none',
+                    zIndex: 1,
+                  }}
+                >
+                  {name}
+                </Typography>
+                <Box
+                  className="bdz-dot"
+                  aria-hidden
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: theme.palette.grey[400],
+                    border: '1px solid rgba(0,0,0,0.08)',
+                    zIndex: 1,
+                  }}
+                />
+              </Box>
 
               {/* Temperature display */}
               <Typography
@@ -318,22 +331,6 @@ export function BedDualZone({
                 </Box>
               )}
 
-              {/* Colored dot */}
-              <Box
-                className="bdz-dot"
-                aria-hidden
-                sx={{
-                  position: 'absolute',
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  top: 12,
-                  right: 10,
-                  bgcolor: theme.palette.grey[400],
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  zIndex: 1,
-                }}
-              />
             </ButtonBase>
           );
         })}
