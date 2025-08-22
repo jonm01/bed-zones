@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Box, ButtonBase, Typography, IconButton } from '@mui/material';
+import { Box, ButtonBase, Typography, IconButton, Chip } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
@@ -345,24 +345,26 @@ export function BedDualZone({
               )}
 
               {scheduleLabel && (
-                <Box
-                  component="span"
+                <Chip
+                  icon={<AccessTimeIcon sx={{ fontSize: 14 }} />}
+                  label={scheduleLabel}
+                  size="small"
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    fontSize: 11,
-                    mt: 0.5,
+                    position: 'absolute',
+                    bottom: 8,
+                    left: 8,
+                    zIndex: 3,
+                    bgcolor: alpha(theme.palette.background.default, 0.8),
                     color: 'text.secondary',
-                    userSelect: 'none',
-                    position: 'relative',
-                    zIndex: 2,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                    '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
+                    '& .MuiChip-label': {
+                      px: 0.5,
+                      fontSize: 11,
+                      lineHeight: 1.2,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                    },
                   }}
-                >
-                  <AccessTimeIcon sx={{ fontSize: 'inherit' }} />
-                  {scheduleLabel}
-                </Box>
+                />
               )}
             </ButtonBase>
           );

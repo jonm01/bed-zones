@@ -117,6 +117,7 @@ export default function BedDemo() {
             aria-label="bed side controls"
             textColor="primary"
             indicatorColor="primary"
+            variant="fullWidth"
             sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
@@ -181,6 +182,7 @@ export default function BedDemo() {
             aria-label="schedule controls"
             textColor="primary"
             indicatorColor="primary"
+            variant="fullWidth"
             sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
