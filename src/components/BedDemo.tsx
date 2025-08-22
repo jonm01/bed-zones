@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Stack, Button, Tabs, Tab, FormControlLabel, Switch } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
+import RadialSlider from './RadialSlider';
 import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
@@ -33,15 +34,21 @@ export default function BedDemo() {
     return { ...z, mode: nextMode, targetTemp };
   };
 
-  const adjustTemp = (side: Side, delta: number) =>
-    updateZone(side, (z) => ({ ...z, currentTemp: z.currentTemp + delta }));
-
   const toggleSchedule = (side: Side) =>
     updateZone(side, (z) =>
       z.schedule?.running
         ? { ...z, schedule: { running: false, nextStart: '22:00' } }
         : { ...z, schedule: { running: true } },
     );
+
+  const fToC = (f: number) => ((f - 32) * 5) / 9;
+  const cToF = (c: number) => (c * 9) / 5 + 32;
+  const toUnit = (t: number) => (unit === 'C' ? Math.round(fToC(t) * 10) / 10 : Math.round(t));
+  const fromUnit = (t: number) => (unit === 'C' ? cToF(t) : t);
+
+  const tempCfg = unit === 'C'
+    ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
+    : { min: 55, max: 110, mid: 82, step: 1 };
 
   const { mode, toggleMode } = React.useContext(ColorModeContext);
 
@@ -81,10 +88,28 @@ export default function BedDemo() {
         <Tab label="Right" value="right" />
       </Tabs>
 
+      {(() => {
+        const z = zones[editing];
+        const current = toUnit(z.currentTemp);
+        const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
+        return (
+          <RadialSlider
+            value={target}
+            current={current}
+            min={tempCfg.min}
+            max={tempCfg.max}
+            step={tempCfg.step}
+            unit={unit}
+            mode={z.mode}
+            onChange={(val) =>
+              updateZone(editing, (prev) => ({ ...prev, targetTemp: fromUnit(val) }))
+            }
+          />
+        );
+      })()}
+
       <Stack direction="row" spacing={1}>
         <Button onClick={() => updateZone(editing, cycle)}>Cycle Mode</Button>
-        <Button onClick={() => adjustTemp(editing, 1)}>Temp +</Button>
-        <Button onClick={() => adjustTemp(editing, -1)}>Temp -</Button>
         <Button onClick={() => toggleSchedule(editing)}>Toggle Schedule</Button>
       </Stack>
     </Stack>
