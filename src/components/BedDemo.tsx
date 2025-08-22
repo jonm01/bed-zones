@@ -58,6 +58,8 @@ export default function BedDemo() {
         value={editing}
         onChange={(_, v) => v && setEditing(v)}
         aria-label="bed side controls"
+        textColor="secondary"
+        indicatorColor="secondary"
       >
         <Tab label="Left" value="left" />
         <Tab label="Right" value="right" />

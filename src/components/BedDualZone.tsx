@@ -79,12 +79,10 @@ export function BedDualZone({
     alignItems: 'center',
     justifyContent: 'center',
     transition:
-      'box-shadow .14s ease, transform .08s ease, border-color .14s ease, background-color .14s ease',
+      'box-shadow .14s ease, transform .14s ease, opacity .14s ease, border-color .14s ease, background-color .14s ease',
     height: '100%',
     width: '100%',
     boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)',
-    '&:hover': { transform: 'translateY(-1px)' },
-    '&:active': { transform: 'translateY(0)' },
   } as const;
 
   const zoneStyleForMode = (mode: Mode) => {
@@ -240,6 +238,19 @@ export function BedDualZone({
                     boxShadow: isEditing
                       ? `${baseZoneSx.boxShadow}, inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}`
                       : baseZoneSx.boxShadow,
+                    transform: isEditing ? 'scale(1.02)' : 'scale(1)',
+                    '&:hover': {
+                      transform: isEditing
+                        ? 'scale(1.02) translateY(-1px)'
+                        : 'translateY(-1px)',
+                    },
+                    '&:active': {
+                      transform: isEditing
+                        ? 'scale(1.02) translateY(0)'
+                        : 'translateY(0)',
+                    },
+                    opacity: editingSide && !isEditing ? 0.6 : 1,
+                    zIndex: isEditing ? 2 : 0,
                   }}
                 >
               {/* State pill */}
