@@ -2,21 +2,45 @@
 
 import * as React from 'react';
 import { Box, ButtonBase, Typography } from '@mui/material';
-import { alpha, useTheme } from '@mui/material/styles';
+import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 
 type Side = 'left' | 'right';
 type Mode = 'off' | 'cool' | 'heat';
+
+/**
+ * State for one half of the bed.
+ * `mode` controls the color of the zone:
+ * `cool` tints the zone blue, `heat` tints it red and `off` leaves it gray.
+ */
 export interface ZoneState { mode: Mode }
 
+/**
+ * Visual representation of a dual-zone bed.
+ * Each side can be selected, edited and display a heating or cooling mode.
+ */
 export interface BedDualZoneProps {
+  /** State for the left zone. */
   left: ZoneState;
+  /** State for the right zone. */
   right: ZoneState;
-  selectedSide?: Side | null;     // radio-style selected side
-  editingSide?: Side | null;      // which side is being edited (extra glow)
+  /**
+   * Side that is currently selected by the user.
+   * Selected zones get a subtle ring.
+   */
+  selectedSide?: Side | null;
+  /**
+   * Side whose settings are being edited.
+   * Editing zones receive an extra glow.
+   */
+  editingSide?: Side | null;
+  /** Callback fired when a side is clicked. */
   onSideClick?: (side: Side) => void;
-  width?: number;                  // px, default 360
+  /** Width of the rendered bed in pixels (default 360). */
+  width?: number;
+  /** Optional labels displayed beneath each zone. */
   labels?: { left?: string; right?: string };
-  sx?: any;                        // optional extra sx
+  /** Additional styles for the root element. */
+  sx?: SxProps<Theme>;
 }
 
 export function BedDualZone({
@@ -111,7 +135,7 @@ export function BedDualZone({
           aspectRatio: '7 / 4',
         }}
       >
-        {zones.map(({ key, state, label }) => {
+        {zones.map(({ key, state }) => {
           const isSelected = selectedSide === key;
           const isEditing = editingSide === key;
           const ariaLabel = `${key} side: ${state.mode}${isSelected ? ', selected' : ''}${isEditing ? ', editing' : ''}`;
