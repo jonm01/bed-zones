@@ -21,6 +21,7 @@ export default function BedDemo() {
     },
   });
   const [editing, setEditing] = React.useState<Side>('left');
+  const [unit, setUnit] = React.useState<'F' | 'C'>('F');
 
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
@@ -49,11 +50,17 @@ export default function BedDemo() {
       spacing={2}
       sx={{ p: 2, maxWidth: 360, mx: 'auto', height: '100vh', justifyContent: 'center' }}
     >
-      <FormControlLabel
-        control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
-        label="Dark mode"
-        sx={{ alignSelf: 'flex-end', mr: 0 }}
-      />
+      <Stack direction="row" justifyContent="flex-end" spacing={1}>
+        <FormControlLabel
+          control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
+          label="Dark mode"
+          sx={{ mr: 0 }}
+        />
+        <FormControlLabel
+          control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
+          label="°C"
+        />
+      </Stack>
       <BedDualZone
         left={zones.left}
         right={zones.right}
@@ -61,6 +68,7 @@ export default function BedDemo() {
         onSideClick={(s) => setEditing(s)}
         labels={{ left: 'Left', right: 'Right' }}
         width={360}
+        unit={unit}
       />
 
       <Tabs

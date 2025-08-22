@@ -49,6 +49,12 @@ export interface BedDualZoneProps {
   width?: number;
   /** Optional labels displayed beneath each zone. */
   labels?: { left?: string; right?: string };
+  /**
+   * Temperature unit used for display. Values in `left` and `right` are
+   * assumed to be provided in Fahrenheit and will be converted if `unit` is
+   * `'C'`.
+   */
+  unit?: 'F' | 'C';
   /** Additional styles for the root element. */
   sx?: SxProps<Theme>;
 }
@@ -60,6 +66,7 @@ export function BedDualZone({
   onSideClick,
   width = 360,
   labels,
+  unit = 'F',
   sx,
 }: BedDualZoneProps) {
   const theme = useTheme();
@@ -117,8 +124,7 @@ export function BedDualZone({
   };
 
   const editingSx = {
-    outline: `2px solid ${ring}`,
-    outlineOffset: -2,
+    boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -129,6 +135,11 @@ export function BedDualZone({
     },
     zIndex: 2,
   } as const;
+
+  const formatTemp = (t: number) =>
+    unit === 'C' ? Math.round(((t - 32) * 5) / 9) : Math.round(t);
+
+  const unitLabel = `°${unit}`;
 
   return (
     <Box
@@ -282,14 +293,14 @@ export function BedDualZone({
                 component="span"
                 sx={{ fontSize: { xs: 24, sm: 32 }, fontWeight: 600 }}
               >
-                {state.currentTemp}°
+                {formatTemp(state.currentTemp)}{unitLabel}
               </Typography>
               {state.mode !== 'off' && state.targetTemp !== undefined && (
                 <Typography
                   component="span"
                   sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary' }}
                 >
-                  {state.mode === 'cool' ? 'to cool' : 'to heat'} {state.targetTemp}°
+                  {state.mode === 'cool' ? 'Cooling to' : 'Heating to'} {formatTemp(state.targetTemp)}{unitLabel}
                 </Typography>
               )}
               {scheduleLabel && (
