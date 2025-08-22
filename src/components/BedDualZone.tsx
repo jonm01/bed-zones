@@ -113,7 +113,6 @@ export function BedDualZone({
   const tintBackground = (color: string) => ({
     background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
     borderColor: 'divider',
-    '& .bdz-dot': { backgroundColor: color },
   });
 
   const modeStyles: Record<Mode, SxProps<Theme>> = {
@@ -122,7 +121,6 @@ export function BedDualZone({
     off: {
       background: baseBackground,
       borderColor: 'divider',
-      '& .bdz-dot': { backgroundColor: theme.palette.grey[400] },
     },
   };
 
@@ -267,7 +265,8 @@ export function BedDualZone({
                 sx={{
                   position: 'absolute',
                   top: 8,
-                  left: 10,
+                  left: '50%',
+                  transform: 'translateX(-50%)',
                   fontSize: { xs: 10, sm: 11 },
                   lineHeight: 1,
                   px: 1,
@@ -387,24 +386,6 @@ export function BedDualZone({
                   {scheduleLabel}
                 </Box>
               )}
-
-              {/* Colored dot */}
-              <Box
-                className="bdz-dot"
-                aria-hidden
-                sx={{
-                  position: 'absolute',
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  top: 12,
-                  right: 10,
-                  bgcolor: theme.palette.grey[400],
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  zIndex: 2,
-                  boxShadow: '0 0 2px rgba(0,0,0,0.4)',
-                }}
-              />
             </ButtonBase>
           );
         })}
