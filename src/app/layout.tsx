@@ -1,10 +1,7 @@
-"use client";
 import type { Metadata } from 'next';
-import * as React from 'react';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { ThemeProvider, CssBaseline, PaletteMode } from '@mui/material';
-import { createAppTheme, ColorModeContext } from '@/theme';
+import type { ReactNode } from 'react';
 import { Roboto } from 'next/font/google';
+import { Providers } from './providers';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -18,24 +15,11 @@ export const metadata: Metadata = {
   description: 'Two-zone bed UI demo',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = React.useState<PaletteMode>('light');
-  const theme = React.useMemo(() => createAppTheme(mode), [mode]);
-  const toggleMode = React.useCallback(() => {
-    setMode((m) => (m === 'light' ? 'dark' : 'light'));
-  }, []);
-
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={roboto.variable}>
       <body>
-        <ColorModeContext.Provider value={{ mode, toggleMode }}>
-          <AppRouterCacheProvider>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              {children}
-            </ThemeProvider>
-          </AppRouterCacheProvider>
-        </ColorModeContext.Provider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
