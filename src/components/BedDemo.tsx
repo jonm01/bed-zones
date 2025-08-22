@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Stack, Button, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Stack, Button, Tabs, Tab } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
 
 type Side = 'left' | 'right';
@@ -54,24 +54,31 @@ export default function BedDemo() {
         width={420}
       />
 
-      <Stack direction="row" spacing={1}>
-        <Button onClick={() => setLeft((z) => cycle(z))}>Cycle Left Mode</Button>
-        <Button onClick={() => setRight((z) => cycle(z))}>Cycle Right Mode</Button>
-        <Button onClick={() => adjustTemp(editing, 1)}>Temp +</Button>
-        <Button onClick={() => adjustTemp(editing, -1)}>Temp -</Button>
-        <Button onClick={() => toggleSchedule(editing)}>Toggle Schedule</Button>
-        <Button onClick={() => setEditing((e) => (e === 'left' ? 'right' : 'left'))}>Toggle Editing</Button>
-      </Stack>
-
-      <ToggleButtonGroup
-        exclusive
+      <Tabs
         value={editing}
         onChange={(_, v) => v && setEditing(v)}
-        size="small"
+        aria-label="bed side controls"
       >
-        <ToggleButton value="left">Select Left</ToggleButton>
-        <ToggleButton value="right">Select Right</ToggleButton>
-      </ToggleButtonGroup>
+        <Tab label="Left" value="left" />
+        <Tab label="Right" value="right" />
+      </Tabs>
+
+      {editing === 'left' && (
+        <Stack direction="row" spacing={1}>
+          <Button onClick={() => setLeft((z) => cycle(z))}>Cycle Mode</Button>
+          <Button onClick={() => adjustTemp('left', 1)}>Temp +</Button>
+          <Button onClick={() => adjustTemp('left', -1)}>Temp -</Button>
+          <Button onClick={() => toggleSchedule('left')}>Toggle Schedule</Button>
+        </Stack>
+      )}
+      {editing === 'right' && (
+        <Stack direction="row" spacing={1}>
+          <Button onClick={() => setRight((z) => cycle(z))}>Cycle Mode</Button>
+          <Button onClick={() => adjustTemp('right', 1)}>Temp +</Button>
+          <Button onClick={() => adjustTemp('right', -1)}>Temp -</Button>
+          <Button onClick={() => toggleSchedule('right')}>Toggle Schedule</Button>
+        </Stack>
+      )}
     </Stack>
   );
 }
