@@ -207,7 +207,7 @@ export function BedDualZone({
               display: 'flex',
               gap: 4,
               pointerEvents: 'none',
-              zIndex: 3,
+              zIndex: 0,
             }}
           >
             {(['left', 'right'] as const).map((side) => (
@@ -239,6 +239,7 @@ export function BedDualZone({
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
               height: '100%',
+              zIndex: 1,
             }}
           >
             <Box
