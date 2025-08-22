@@ -231,19 +231,20 @@ export function BedDualZone({
                 sx={{
                   position: 'absolute',
                   top: 8,
-                  left: key === 'left' ? 8 : 2,
-                  right: key === 'left' ? 2 : 8,
+                  left: 8,
+                  right: 8,
                   height: '15%',
                   borderRadius:
                     key === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
                   background: `linear-gradient(180deg, ${alpha(
-                    theme.palette.background.paper,
-                    0.95,
-                  )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                    theme.palette.grey[400],
+                    0.9,
+                  )}, ${alpha(theme.palette.grey[600], 0.9)})`,
                   border: '1px solid',
                   borderColor: 'divider',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
                   pointerEvents: 'none',
+                  zIndex: 0,
                 }}
               />
               {/* Side label */}
@@ -258,10 +259,11 @@ export function BedDualZone({
                   px: 1,
                   py: 0.5,
                   borderRadius: 999,
-                  bgcolor: alpha(theme.palette.background.default, 0.9),
+                  bgcolor: alpha(theme.palette.background.default, 0.95),
                   border: '1px solid',
                   borderColor: 'divider',
                   backdropFilter: 'blur(2px)',
+                  zIndex: 1,
                   userSelect: 'none',
                 }}
               >
@@ -304,10 +306,11 @@ export function BedDualZone({
                     px: 1,
                     py: 0.25,
                     borderRadius: 8,
-                    bgcolor: alpha(theme.palette.background.default, 0.9),
+                    bgcolor: alpha(theme.palette.background.default, 0.95),
                     border: '1px solid',
                     borderColor: 'divider',
                     whiteSpace: 'nowrap',
+                    zIndex: 1,
                   }}
                 >
                   <AccessTimeIcon sx={{ fontSize: 'inherit' }} />
@@ -328,6 +331,7 @@ export function BedDualZone({
                   right: 10,
                   bgcolor: theme.palette.grey[400],
                   border: '1px solid rgba(0,0,0,0.08)',
+                  zIndex: 1,
                 }}
               />
             </ButtonBase>
