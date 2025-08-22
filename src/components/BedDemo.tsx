@@ -53,12 +53,10 @@ export default function BedDemo() {
     ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
     : { min: 55, max: 110, mid: 82, step: 1 };
 
-  const changeTemp = (side: Side, delta: number) =>
+  const setTemp = (side: Side, next: number) =>
     updateZone(side, (z) => {
-      const currentTarget = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
-      let next = currentTarget + delta;
-      next = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
-      const nextF = fromUnit(next, unit);
+      const clamped = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
+      const nextF = fromUnit(clamped, unit);
       const mode =
         z.mode === 'off'
           ? z.mode
@@ -141,7 +139,7 @@ export default function BedDemo() {
                   max={tempCfg.max}
                   step={tempCfg.step}
                   unit={unit}
-                  onChange={(v) => changeTemp(editing, v - target)}
+                  onChange={(v) => setTemp(editing, v)}
                 />
               </Stack>
             );
