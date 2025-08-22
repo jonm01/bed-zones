@@ -51,7 +51,8 @@ export default function BedDemo() {
 
   const fToC = (f: number) => ((f - 32) * 5) / 9;
   const cToF = (c: number) => (c * 9) / 5 + 32;
-  const toUnit = (t: number) => (unit === 'C' ? Math.round(fToC(t) * 10) / 10 : Math.round(t));
+  const toUnit = (t: number) =>
+    unit === 'C' ? Math.round(fToC(t) * 2) / 2 : Math.round(t);
   const fromUnit = (t: number) => (unit === 'C' ? cToF(t) : t);
 
   const tempCfg = unit === 'C'
