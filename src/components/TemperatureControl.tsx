@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Stack, Slider, IconButton, Typography } from '@mui/material';
+import { Stack, IconButton, Typography, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { TempUnit } from '@/utils/temperature';
@@ -13,7 +13,7 @@ export interface TemperatureControlProps {
   min: number;
   /** Maximum allowed value. */
   max: number;
-  /** Increment step for both slider and buttons. */
+  /** Increment step for +/- buttons and input. */
   step: number;
   /** Display unit label; defaults to Fahrenheit. */
   unit?: TempUnit;
@@ -23,7 +23,7 @@ export interface TemperatureControlProps {
 
 /**
  * Control for adjusting a temperature.
- * Provides a slider for fast changes and +/- buttons for fine tuning.
+ * Provides a numeric input for quick jumps and +/- buttons for fine tuning.
  */
 export function TemperatureControl({
   value,
@@ -33,40 +33,39 @@ export function TemperatureControl({
   unit = 'F',
   onChange,
 }: TemperatureControlProps) {
-  const handleSlider = (_: Event, newValue: number | number[]) => {
-    if (Array.isArray(newValue)) return;
-    const clamped = Math.min(max, Math.max(min, newValue));
-    onChange(clamped);
-  };
-
   const adjust = (delta: number) => {
     const next = Math.min(max, Math.max(min, value + delta));
     onChange(next);
   };
 
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = Number(e.target.value);
+    if (Number.isNaN(next)) return;
+    const clamped = Math.min(max, Math.max(min, next));
+    onChange(clamped);
+  };
+
   return (
-    <Stack spacing={1} alignItems="center">
-      <Slider
-        aria-label="temperature"
+    <Stack direction="row" spacing={1} alignItems="center">
+      <IconButton onClick={() => adjust(-step)}>
+        <RemoveIcon />
+      </IconButton>
+      <TextField
+        type="number"
         value={value}
-        min={min}
-        max={max}
-        step={step}
-        onChange={handleSlider}
-        sx={{ width: 200, mt: 1 }}
+        onChange={handleInput}
+        inputProps={{
+          min,
+          max,
+          step,
+          style: { textAlign: 'center', width: 72 },
+        }}
+        size="small"
       />
-      <Stack direction="row" spacing={1} alignItems="center">
-        <IconButton onClick={() => adjust(-step)}>
-          <RemoveIcon />
-        </IconButton>
-        <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
-          {value}
-          {`°${unit}`}
-        </Typography>
-        <IconButton onClick={() => adjust(step)}>
-          <AddIcon />
-        </IconButton>
-      </Stack>
+      <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
+      <IconButton onClick={() => adjust(step)}>
+        <AddIcon />
+      </IconButton>
     </Stack>
   );
 }
