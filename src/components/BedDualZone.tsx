@@ -16,7 +16,7 @@ export interface ZoneState { mode: Mode }
 
 /**
  * Visual representation of a dual-zone bed.
- * Each side can be selected, edited and display a heating or cooling mode.
+ * Each side displays a heating or cooling mode and can be highlighted for editing.
  */
 export interface BedDualZoneProps {
   /** State for the left zone. */
@@ -24,13 +24,8 @@ export interface BedDualZoneProps {
   /** State for the right zone. */
   right: ZoneState;
   /**
-   * Side that is currently selected by the user.
-   * Selected zones get a subtle ring.
-   */
-  selectedSide?: Side | null;
-  /**
-   * Side whose settings are being edited.
-   * Editing zones receive an extra glow.
+   * Side whose settings are being edited and therefore highlighted.
+   * Clicking a zone should update this value in the parent component.
    */
   editingSide?: Side | null;
   /** Callback fired when a side is clicked. */
@@ -46,7 +41,6 @@ export interface BedDualZoneProps {
 export function BedDualZone({
   left,
   right,
-  selectedSide = null,
   editingSide = null,
   onSideClick,
   width = 360,
@@ -136,25 +130,20 @@ export function BedDualZone({
         }}
       >
         {zones.map(({ key, state }) => {
-          const isSelected = selectedSide === key;
           const isEditing = editingSide === key;
-          const ariaLabel = `${key} side: ${state.mode}${isSelected ? ', selected' : ''}${isEditing ? ', editing' : ''}`;
+          const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
 
           return (
             <ButtonBase
               key={key}
               onClick={() => onSideClick?.(key)}
               aria-label={ariaLabel}
-              aria-pressed={isSelected}
+              aria-pressed={isEditing}
               title={ariaLabel}
               sx={{
                 ...baseZoneSx,
                 ...zoneStyleForMode(state.mode),
-                boxShadow: isEditing
-                  ? `inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}`
-                  : isSelected
-                  ? `inset 0 0 0 2px ${ring}`
-                  : undefined,
+                boxShadow: isEditing ? `inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}` : undefined,
               }}
             >
               {/* State pill */}

@@ -10,8 +10,7 @@ type Side = 'left' | 'right';
 export default function BedDemo() {
   const [left, setLeft] = React.useState<Mode>('cool');
   const [right, setRight] = React.useState<Mode>('off');
-  const [selected, setSelected] = React.useState<Side>('left');
-  const [editing, setEditing] = React.useState<Side>('right');
+  const [editing, setEditing] = React.useState<Side>('left');
 
   const cycle = (m: Mode): Mode => (m === 'cool' ? 'heat' : m === 'heat' ? 'off' : 'cool');
 
@@ -20,9 +19,8 @@ export default function BedDemo() {
       <BedDualZone
         left={{ mode: left }}
         right={{ mode: right }}
-        selectedSide={selected}
         editingSide={editing}
-        onSideClick={(s) => setSelected(s)}
+        onSideClick={(s) => setEditing(s)}
         labels={{ left: 'Left', right: 'Right' }}
         width={420}
       />
@@ -37,8 +35,8 @@ export default function BedDemo() {
 
       <ToggleButtonGroup
         exclusive
-        value={selected}
-        onChange={(_, v) => v && setSelected(v)}
+        value={editing}
+        onChange={(_, v) => v && setEditing(v)}
         size="small"
       >
         <ToggleButton value="left">Select Left</ToggleButton>
