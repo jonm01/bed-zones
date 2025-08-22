@@ -109,7 +109,6 @@ export function BedDualZone({
   const tintBackground = (color: string) => ({
     background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
     borderColor: alpha(color, 0.45),
-    '& .bdz-dot': { backgroundColor: color },
   });
 
   const modeStyles: Record<Mode, SxProps<Theme>> = {
@@ -118,9 +117,15 @@ export function BedDualZone({
     off: {
       background: baseBackground,
       borderColor: 'divider',
-      '& .bdz-dot': { backgroundColor: theme.palette.grey[400] },
     },
   };
+
+  const dotColor = (mode: Mode) =>
+    mode === 'cool'
+      ? theme.palette.info.main
+      : mode === 'heat'
+      ? theme.palette.error.main
+      : theme.palette.grey[400];
 
   const editingSx = {
     boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
@@ -184,6 +189,54 @@ export function BedDualZone({
         >
           <Box
             sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              right: 8,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          >
+            {zones.map(({ key, state, name }) => (
+              <Box
+                key={key}
+                sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+              >
+                <Typography
+                  component="span"
+                  sx={{
+                    fontSize: { xs: 10, sm: 11 },
+                    lineHeight: 1,
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 999,
+                    bgcolor: alpha(theme.palette.background.default, 0.95),
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    backdropFilter: 'blur(2px)',
+                    userSelect: 'none',
+                  }}
+                >
+                  {name}
+                </Typography>
+                <Box
+                  aria-hidden
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: dotColor(state.mode),
+                    border: '1px solid rgba(0,0,0,0.08)',
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+          <Box
+            sx={{
               position: 'relative',
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -227,62 +280,6 @@ export function BedDualZone({
                     opacity: editingSide && !isEditing ? 0.6 : 1,
                   }}
                 >
-              <Box
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  right: 8,
-                  height: '15%',
-                  borderRadius:
-                    key === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
-                  background: `linear-gradient(180deg, ${alpha(
-                    theme.palette.background.paper,
-                    0.95,
-                  )}, ${alpha(theme.palette.grey[800], 0.9)})`,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
-                  pointerEvents: 'none',
-                  zIndex: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  px: 1,
-                }}
-              >
-                <Typography
-                  component="span"
-                  sx={{
-                    fontSize: { xs: 10, sm: 11 },
-                    lineHeight: 1,
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 999,
-                    bgcolor: alpha(theme.palette.background.default, 0.95),
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    backdropFilter: 'blur(2px)',
-                    userSelect: 'none',
-                    zIndex: 1,
-                  }}
-                >
-                  {name}
-                </Typography>
-                <Box
-                  className="bdz-dot"
-                  aria-hidden
-                  sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '50%',
-                    bgcolor: theme.palette.grey[400],
-                    border: '1px solid rgba(0,0,0,0.08)',
-                    zIndex: 1,
-                  }}
-                />
-              </Box>
-
               {/* Temperature display */}
               <Typography
                 component="span"
