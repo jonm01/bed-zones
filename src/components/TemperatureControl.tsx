@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Stack, IconButton, Typography, Box } from '@mui/material';
+import { alpha, useTheme } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { TempUnit } from '@/utils/temperature';
@@ -33,6 +34,7 @@ export default function TemperatureControl({
   unit = 'F',
   onChange,
 }: TemperatureControlProps) {
+  const theme = useTheme();
   const numbers = React.useMemo(() => {
     const arr: number[] = [];
     for (let n = min; n <= max; n = Number((n + step).toFixed(10))) {
@@ -185,8 +187,13 @@ export default function TemperatureControl({
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton onClick={() => adjust(-step)}>
-        <RemoveIcon />
+      <IconButton
+        onClick={() => adjust(-step)}
+        size="small"
+        color="primary"
+        aria-label="decrease"
+      >
+        <RemoveIcon fontSize="small" />
       </IconButton>
       <Box sx={{ position: 'relative', height: 120, width: 60 }}>
         <Box
@@ -212,15 +219,21 @@ export default function TemperatureControl({
               }}
               sx={{
                 height: 40,
-                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
                 borderRadius: 2,
-                border: '2px solid',
-                borderColor: n === value ? 'primary.main' : 'transparent',
+                color:
+                  n === value
+                    ? theme.palette.primary.main
+                    : theme.palette.text.secondary,
+                backgroundColor:
+                  n === value
+                    ? alpha(theme.palette.primary.main, 0.1)
+                    : 'transparent',
                 fontWeight: n === value ? 600 : 400,
+                transition: 'background-color 0.2s, color 0.2s',
               }}
             >
               <Typography>{n}</Typography>
@@ -230,8 +243,13 @@ export default function TemperatureControl({
         </Box>
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton onClick={() => adjust(step)}>
-        <AddIcon />
+      <IconButton
+        onClick={() => adjust(step)}
+        size="small"
+        color="primary"
+        aria-label="increase"
+      >
+        <AddIcon fontSize="small" />
       </IconButton>
     </Stack>
   );
