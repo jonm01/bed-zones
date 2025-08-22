@@ -1,7 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { Box, ButtonBase, Typography, IconButton, Chip } from '@mui/material';
+import {
+  Box,
+  ButtonBase,
+  Typography,
+  IconButton,
+  Badge,
+  Tooltip,
+} from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
@@ -270,42 +277,58 @@ export function BedDualZone({
                 {name}
               </Box>
 
-              {/* Power button placed in the bottom-right corner for clarity */}
+              {/* Power button with optional schedule badge */}
               {onPowerToggle && (
-                <IconButton
-                  size="small"
-                  disabled={!isEditing}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onPowerToggle(key);
-                  }}
-                  sx={{
-                    position: 'absolute',
-                    bottom: 8,
-                    right: 10,
-                    zIndex: 3,
-                    bgcolor: alpha(theme.palette.background.default, 0.9),
-                    boxShadow: [
-                      '0 1px 2px rgba(0,0,0,0.4)',
-                      ...(modeColor
-                        ? [`0 0 0 2px ${alpha(modeColor, 0.8)}`, `0 0 6px ${alpha(modeColor, 0.6)}`]
-                        : []),
-                    ].join(', '),
-                    transition: 'box-shadow .2s ease',
-                    '&:hover': {
-                      bgcolor: alpha(theme.palette.background.default, 0.7),
-                    },
-                  }}
-                  color={
-                    state.mode === 'cool'
-                      ? 'info'
-                      : state.mode === 'heat'
-                      ? 'error'
-                      : 'default'
-                  }
+                <Tooltip
+                  title={scheduleLabel ?? ''}
+                  placement="top"
+                  disableHoverListener={!scheduleLabel}
                 >
-                  <PowerSettingsNewIcon fontSize="small" />
-                </IconButton>
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                    badgeContent={
+                      scheduleLabel ? (
+                        <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                      ) : undefined
+                    }
+                    sx={{ position: 'absolute', bottom: 8, right: 10, zIndex: 3 }}
+                  >
+                    <IconButton
+                      size="small"
+                      disabled={!isEditing}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPowerToggle(key);
+                      }}
+                      sx={{
+                        bgcolor: alpha(theme.palette.background.default, 0.9),
+                        boxShadow: [
+                          '0 1px 2px rgba(0,0,0,0.4)',
+                          ...(modeColor
+                            ? [
+                                `0 0 0 2px ${alpha(modeColor, 0.8)}`,
+                                `0 0 6px ${alpha(modeColor, 0.6)}`,
+                              ]
+                            : []),
+                        ].join(', '),
+                        transition: 'box-shadow .2s ease',
+                        '&:hover': {
+                          bgcolor: alpha(theme.palette.background.default, 0.7),
+                        },
+                      }}
+                      color={
+                        state.mode === 'cool'
+                          ? 'info'
+                          : state.mode === 'heat'
+                          ? 'error'
+                          : 'default'
+                      }
+                    >
+                      <PowerSettingsNewIcon fontSize="small" />
+                    </IconButton>
+                  </Badge>
+                </Tooltip>
               )}
 
               {/* Temperature display */}
@@ -344,28 +367,6 @@ export function BedDualZone({
                 </Typography>
               )}
 
-              {scheduleLabel && (
-                <Chip
-                  icon={<AccessTimeIcon sx={{ fontSize: 14 }} />}
-                  label={scheduleLabel}
-                  size="small"
-                  sx={{
-                    position: 'absolute',
-                    bottom: 48,
-                    right: 10,
-                    zIndex: 3,
-                    bgcolor: alpha(theme.palette.background.default, 0.8),
-                    color: 'text.secondary',
-                    '& .MuiChip-icon': { color: 'inherit', ml: 0.5 },
-                    '& .MuiChip-label': {
-                      px: 0.5,
-                      fontSize: 11,
-                      lineHeight: 1.2,
-                      textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                    },
-                  }}
-                />
-              )}
             </ButtonBase>
           );
         })}
