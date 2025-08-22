@@ -72,7 +72,7 @@ export default function BedDemo() {
           ? 'heat'
           : nextF < z.currentTemp
           ? 'cool'
-          : 'off';
+          : z.mode;
       return { ...z, targetTemp: nextF, mode };
     });
 
@@ -80,8 +80,9 @@ export default function BedDemo() {
     updateZone(side, (z) => {
       if (z.mode === 'off') {
         const target = z.targetTemp ?? z.currentTemp;
-        const mode = target > z.currentTemp ? 'heat' : target < z.currentTemp ? 'cool' : 'off';
-        return { ...z, mode };
+        const mode =
+          target > z.currentTemp ? 'heat' : target < z.currentTemp ? 'cool' : 'heat';
+        return { ...z, mode, targetTemp: target };
       }
       return { ...z, mode: 'off' };
     });

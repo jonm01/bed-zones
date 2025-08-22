@@ -248,9 +248,6 @@ export function BedDualZone({
                 : state.schedule?.nextStart
                 ? `Starts at ${state.schedule.nextStart}`
                 : undefined;
-              const modeLabel =
-                state.mode === 'cool' ? 'Cooling' : state.mode === 'heat' ? 'Heating' : 'Off';
-
               return (
                 <ButtonBase
                   key={key}
@@ -266,7 +263,7 @@ export function BedDualZone({
                     opacity: editingSide && !isEditing ? 0.6 : 1,
                   }}
                 >
-              {/* State pill */}
+              {/* Side label */}
               <Typography
                 component="span"
                 sx={{
@@ -288,7 +285,7 @@ export function BedDualZone({
                   userSelect: 'none',
                 }}
               >
-                {modeLabel}
+                {name}
               </Typography>
 
               {/* Temperature display */}
@@ -304,18 +301,13 @@ export function BedDualZone({
                   component="span"
                   sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
                 >
-                  {state.mode === 'cool' ? 'Cooling to' : 'Heating to'}{' '}
-                  {formatTemp(state.targetTemp)}{unitLabel}
+                  {state.currentTemp === state.targetTemp
+                    ? `Maintaining ${formatTemp(state.targetTemp)}${unitLabel}`
+                    : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
+                        state.targetTemp,
+                      )}${unitLabel}`}
                 </Typography>
               )}
-
-              {/* Side name */}
-              <Typography
-                component="span"
-                sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
-              >
-                {name}
-              </Typography>
 
               {scheduleLabel && (
                 <Typography
