@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { Stack, IconButton, Typography, Box } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
+import AddRounded from '@mui/icons-material/AddRounded';
+import RemoveRounded from '@mui/icons-material/RemoveRounded';
 import { TempUnit } from '@/utils/temperature';
 
 export interface TemperatureControlProps {
@@ -185,10 +185,30 @@ export default function TemperatureControl({
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton onClick={() => adjust(-step)}>
-        <RemoveIcon />
+      <IconButton
+        onClick={() => adjust(-step)}
+        size="small"
+        color="primary"
+        sx={{ border: '1px solid', borderColor: 'divider' }}
+      >
+        <RemoveRounded />
       </IconButton>
-      <Box sx={{ position: 'relative', height: 120, width: 60 }}>
+      <Box sx={{ position: 'relative', height: 120, width: 64 }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            height: 40,
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            border: '1px solid',
+            borderColor: 'divider',
+          }}
+        />
         <Box
           ref={containerRef}
           onScroll={handleScroll}
@@ -199,7 +219,8 @@ export default function TemperatureControl({
             scrollSnapType: 'y mandatory',
             WebkitOverflowScrolling: 'touch',
             maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+            WebkitMaskImage:
+              'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
             '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
@@ -212,26 +233,35 @@ export default function TemperatureControl({
               }}
               sx={{
                 height: 40,
-                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
-                borderRadius: 2,
-                border: '2px solid',
-                borderColor: n === value ? 'primary.main' : 'transparent',
-                fontWeight: n === value ? 600 : 400,
               }}
             >
-              <Typography>{n}</Typography>
+              <Typography
+                sx={{
+                  color: n === value ? 'text.primary' : 'text.secondary',
+                  fontSize: n === value ? 24 : 18,
+                  fontWeight: n === value ? 500 : 400,
+                  transition: 'all 0.2s',
+                }}
+              >
+                {n}
+              </Typography>
             </Box>
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton onClick={() => adjust(step)}>
-        <AddIcon />
+      <IconButton
+        onClick={() => adjust(step)}
+        size="small"
+        color="primary"
+        sx={{ border: '1px solid', borderColor: 'divider' }}
+      >
+        <AddRounded />
       </IconButton>
     </Stack>
   );
