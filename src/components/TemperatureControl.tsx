@@ -47,6 +47,8 @@ export function TemperatureControl({
   const isFirst = React.useRef(true);
   const prevValue = React.useRef(value);
   const suppressScroll = React.useRef(false);
+  const userScrolling = React.useRef(false);
+  const scrollEndTimer = React.useRef<number>();
 
   const keyFor = React.useCallback((n: number) => n.toFixed(5), []);
 
@@ -65,12 +67,12 @@ export function TemperatureControl({
 
   const scrollToValue = React.useCallback(
     (v: number, smooth = true) => {
+      const container = containerRef.current;
       const node = itemRefs.current.get(keyFor(v));
-      node?.scrollIntoView({
-        behavior: smooth ? 'smooth' : 'auto',
-        block: 'center',
-        inline: 'nearest',
-      });
+      if (!container || !node) return;
+      const top =
+        node.offsetTop - container.clientHeight / 2 + node.offsetHeight / 2;
+      container.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' });
     },
     [keyFor],
   );
@@ -108,12 +110,17 @@ export function TemperatureControl({
       navigator.vibrate?.(5);
       prevValue.current = value;
     }
-    scrollToValue(value, !isFirst.current);
+    if (!userScrolling.current) {
+      scrollToValue(value, !isFirst.current);
+    }
     isFirst.current = false;
   }, [value, scrollToValue]);
 
   const handleScroll = () => {
     if (suppressScroll.current || !containerRef.current) return;
+    userScrolling.current = true;
+    if (scrollEndTimer.current) window.clearTimeout(scrollEndTimer.current);
+
     if (frame.current) cancelAnimationFrame(frame.current);
     frame.current = requestAnimationFrame(() => {
       const container = containerRef.current!;
@@ -134,11 +141,16 @@ export function TemperatureControl({
       if (snapped !== value) onChange(snapped);
 
       const atTop = container.scrollTop <= 0;
-      const atBottom = container.scrollTop >= container.scrollHeight - container.clientHeight;
+      const atBottom = container.scrollTop >=
+        container.scrollHeight - container.clientHeight;
       if ((atTop && snapped === min) || (atBottom && snapped === max)) {
         bounce(atTop ? 'min' : 'max');
       }
     });
+
+    scrollEndTimer.current = window.setTimeout(() => {
+      userScrolling.current = false;
+    }, 100);
   };
 
   return (
