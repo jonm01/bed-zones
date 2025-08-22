@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Stack, IconButton, Typography, Box } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { TempUnit } from '@/utils/temperature';
@@ -183,12 +184,45 @@ export default function TemperatureControl({
     }, 100);
   };
 
+  const buttonSx = {
+    border: '1px solid',
+    borderColor: 'divider',
+    bgcolor: 'background.paper',
+    '&:hover': { bgcolor: 'action.hover' },
+  } as const;
+
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton onClick={() => adjust(-step)}>
+      <IconButton size="small" onClick={() => adjust(-step)} sx={buttonSx}>
         <RemoveIcon />
       </IconButton>
-      <Box sx={{ position: 'relative', height: 120, width: 60 }}>
+      <Box
+        sx={(theme) => ({
+          position: 'relative',
+          height: 120,
+          width: 60,
+          borderRadius: 3,
+          border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+          bgcolor: alpha(theme.palette.background.paper, 0.6),
+          backdropFilter: 'blur(4px)',
+          overflow: 'hidden',
+          boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
+        })}
+      >
+        <Box
+          sx={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            height: 40,
+            transform: 'translateY(-50%)',
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            zIndex: 1,
+          }}
+        />
         <Box
           ref={containerRef}
           onScroll={handleScroll}
@@ -212,25 +246,39 @@ export default function TemperatureControl({
               }}
               sx={{
                 height: 40,
-                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
-                borderRadius: 2,
-                border: '2px solid',
-                borderColor: n === value ? 'primary.main' : 'transparent',
-                fontWeight: n === value ? 600 : 400,
               }}
             >
-              <Typography>{n}</Typography>
+              <Typography
+                sx={{
+                  transition: 'all 0.2s',
+                  fontWeight: n === value ? 600 : 400,
+                  color: n === value ? 'text.primary' : 'text.secondary',
+                  fontSize: n === value ? 20 : 16,
+                }}
+              >
+                {n}
+              </Typography>
             </Box>
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
+        <Typography
+          sx={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            zIndex: 2,
+            fontSize: 14,
+            color: 'text.secondary',
+            pointerEvents: 'none',
+          }}
+        >{`°${unit}`}</Typography>
       </Box>
-      <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton onClick={() => adjust(step)}>
+      <IconButton size="small" onClick={() => adjust(step)} sx={buttonSx}>
         <AddIcon />
       </IconButton>
     </Stack>
