@@ -21,7 +21,6 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ScheduleIcon from '@mui/icons-material/Schedule';
-import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
 
@@ -93,7 +92,6 @@ export default function BedDemo() {
   const setScheduleStart = (side: Side, nextStart: string) =>
     updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, nextStart } }));
 
-  const { mode, toggleMode } = React.useContext(ColorModeContext);
 
   const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';
 
@@ -160,10 +158,6 @@ export default function BedDemo() {
           spacing={2}
           sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
         >
-          <FormControlLabel
-            control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
-            label="Dark mode"
-          />
           <FormControlLabel
             control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
             label="Show °C"

@@ -78,7 +78,7 @@ export function BedDualZone({
     { key: 'right' as const, state: right, name: rightName },
   ];
 
-  const ring = theme.palette.mode === 'dark' ? theme.palette.grey[200] : theme.palette.grey[900];
+  const ring = theme.palette.grey[200];
   const editGlow = alpha(theme.palette.secondary.main, 0.28);
 
   const baseZoneSx = {
@@ -99,17 +99,12 @@ export function BedDualZone({
     '&:active': { transform: 'translateY(0)' },
   } as const;
 
-  const highlight =
-    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)';
-  const shadow =
-    theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.4)';
-  const baseBackground =
-    theme.palette.mode === 'dark'
-      ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
-          theme.palette.grey[700],
-          0.9,
-        )})`
-      : 'linear-gradient(180deg, #fafafa, #e5e5e5)';
+  const highlight = 'rgba(255,255,255,0.05)';
+  const shadow = 'rgba(0,0,0,0.1)';
+  const baseBackground = `linear-gradient(180deg, ${alpha(
+    theme.palette.grey[800],
+    0.9,
+  )}, ${alpha(theme.palette.grey[700], 0.9)})`;
 
   const tintBackground = (color: string) => ({
     background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
@@ -164,17 +159,11 @@ export function BedDualZone({
           p: '6px',
           border: '1px solid',
           borderColor: 'divider',
-          background:
-            theme.palette.mode === 'dark'
-              ? `linear-gradient(180deg, ${alpha(theme.palette.grey[700], 0.6)}, ${alpha(
-                  theme.palette.grey[800],
-                  0.6,
-                )})`
-              : 'linear-gradient(180deg,#f5f5f5,#dcdcdc)',
-          boxShadow:
-            theme.palette.mode === 'dark'
-              ? '0 4px 12px rgba(0,0,0,0.5)'
-              : '0 4px 12px rgba(0,0,0,0.15)',
+          background: `linear-gradient(180deg, ${alpha(theme.palette.grey[700], 0.6)}, ${alpha(
+            theme.palette.grey[800],
+            0.6,
+          )})`,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.5)',
           aspectRatio: '3 / 3.2',
           overflow: 'hidden',
         }}
@@ -185,54 +174,14 @@ export function BedDualZone({
             inset: 6,
             borderRadius: '20px',
             overflow: 'hidden',
-            background:
-              theme.palette.mode === 'dark'
-                ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
-                    theme.palette.grey[700],
-                    0.9,
-                  )})`
-                : 'linear-gradient(180deg,#fff,#e9e9e9)',
+            background: `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
+              theme.palette.grey[700],
+              0.9,
+            )})`,
             border: '1px solid',
             borderColor: 'divider',
           }}
         >
-          {/* pillows */}
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 4,
-              left: 8,
-              right: 8,
-              height: '15%',
-              display: 'flex',
-              gap: 4,
-              pointerEvents: 'none',
-              zIndex: 0,
-            }}
-          >
-            {(['left', 'right'] as const).map((side) => (
-              <Box
-                key={side}
-                sx={{
-                  flex: 1,
-                  borderRadius: side === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
-                  background:
-                    theme.palette.mode === 'dark'
-                      ? `linear-gradient(180deg, ${alpha(
-                          theme.palette.background.paper,
-                          0.95,
-                        )}, ${alpha(theme.palette.grey[800], 0.9)})`
-                      : 'linear-gradient(180deg,#fff,#e0e0e0)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  boxShadow:
-                    theme.palette.mode === 'dark'
-                      ? '0 2px 4px rgba(0,0,0,0.4)'
-                      : '0 2px 4px rgba(0,0,0,0.15)',
-                }}
-              />
-            ))}
-          </Box>
           <Box
             sx={{
               position: 'relative',
@@ -278,6 +227,25 @@ export function BedDualZone({
                     opacity: editingSide && !isEditing ? 0.6 : 1,
                   }}
                 >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  left: key === 'left' ? 8 : 2,
+                  right: key === 'left' ? 2 : 8,
+                  height: '15%',
+                  borderRadius:
+                    key === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
+                  background: `linear-gradient(180deg, ${alpha(
+                    theme.palette.background.paper,
+                    0.95,
+                  )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+                  pointerEvents: 'none',
+                }}
+              />
               {/* Side label */}
               <Typography
                 component="span"
@@ -290,10 +258,7 @@ export function BedDualZone({
                   px: 1,
                   py: 0.5,
                   borderRadius: 999,
-                  bgcolor:
-                    theme.palette.mode === 'dark'
-                      ? alpha(theme.palette.background.default, 0.9)
-                      : 'rgba(255,255,255,0.9)',
+                  bgcolor: alpha(theme.palette.background.default, 0.9),
                   border: '1px solid',
                   borderColor: 'divider',
                   backdropFilter: 'blur(2px)',
@@ -339,10 +304,7 @@ export function BedDualZone({
                     px: 1,
                     py: 0.25,
                     borderRadius: 8,
-                    bgcolor:
-                      theme.palette.mode === 'dark'
-                        ? alpha(theme.palette.background.default, 0.9)
-                        : 'rgba(255,255,255,0.9)',
+                    bgcolor: alpha(theme.palette.background.default, 0.9),
                     border: '1px solid',
                     borderColor: 'divider',
                     whiteSpace: 'nowrap',
