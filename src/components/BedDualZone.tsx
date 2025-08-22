@@ -244,6 +244,7 @@ export function BedDualZone({
                   borderColor: 'divider',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
                   pointerEvents: 'none',
+                  zIndex: 1,
                 }}
               />
               {/* Side label */}
@@ -263,6 +264,8 @@ export function BedDualZone({
                   borderColor: 'divider',
                   backdropFilter: 'blur(2px)',
                   userSelect: 'none',
+                  zIndex: 2,
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                 }}
               >
                 {name}
@@ -271,7 +274,13 @@ export function BedDualZone({
               {/* Temperature display */}
               <Typography
                 component="span"
-                sx={{ fontSize: { xs: 24, sm: 32 }, fontWeight: 600 }}
+                sx={{
+                  fontSize: { xs: 24, sm: 32 },
+                  fontWeight: 600,
+                  position: 'relative',
+                  zIndex: 2,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                }}
               >
                 {formatTemp(state.currentTemp)}{unitLabel}
               </Typography>
@@ -279,7 +288,15 @@ export function BedDualZone({
               {state.mode !== 'off' && state.targetTemp !== undefined && (
                 <Typography
                   component="span"
-                  sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
+                  sx={{
+                    fontSize: 12,
+                    mt: 0.5,
+                    color: 'text.secondary',
+                    userSelect: 'none',
+                    position: 'relative',
+                    zIndex: 2,
+                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                  }}
                 >
                   {state.currentTemp === state.targetTemp
                     ? `Maintaining ${formatTemp(state.targetTemp)}${unitLabel}`
@@ -308,6 +325,9 @@ export function BedDualZone({
                     border: '1px solid',
                     borderColor: 'divider',
                     whiteSpace: 'nowrap',
+                    zIndex: 2,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                   }}
                 >
                   <AccessTimeIcon sx={{ fontSize: 'inherit' }} />
@@ -328,6 +348,8 @@ export function BedDualZone({
                   right: 10,
                   bgcolor: theme.palette.grey[400],
                   border: '1px solid rgba(0,0,0,0.08)',
+                  zIndex: 2,
+                  boxShadow: '0 0 2px rgba(0,0,0,0.4)',
                 }}
               />
             </ButtonBase>
