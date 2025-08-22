@@ -299,6 +299,16 @@ export function BedDualZone({
                 {formatTemp(state.currentTemp)}{unitLabel}
               </Typography>
 
+              {state.mode !== 'off' && state.targetTemp !== undefined && (
+                <Typography
+                  component="span"
+                  sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
+                >
+                  {state.mode === 'cool' ? 'Cooling to' : 'Heating to'}{' '}
+                  {formatTemp(state.targetTemp)}{unitLabel}
+                </Typography>
+              )}
+
               {/* Side name */}
               <Typography
                 component="span"
