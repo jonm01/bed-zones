@@ -90,7 +90,10 @@ export default function BedDemo() {
     updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, running } }));
 
   const setScheduleStart = (side: Side, nextStart: string) =>
-    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, nextStart } }));
+    updateZone(side, (z) => ({
+      ...z,
+      schedule: { running: z.schedule?.running ?? false, nextStart },
+    }));
 
 
   const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';
