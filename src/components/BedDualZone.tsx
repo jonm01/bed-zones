@@ -83,46 +83,52 @@ export function BedDualZone({
     height: '100%',
     width: '100%',
     boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)',
+    transform: 'none',
+    '&:hover': { transform: 'translateY(-1px)' },
+    '&:active': { transform: 'translateY(0)' },
   } as const;
 
-  const zoneStyleForMode = (mode: Mode) => {
-    const highlight =
-      theme.palette.mode === 'dark'
-        ? 'rgba(255,255,255,0.05)'
-        : 'rgba(255,255,255,0.9)';
-    const shadow =
-      theme.palette.mode === 'dark'
-        ? 'rgba(0,0,0,0.1)'
-        : 'rgba(255,255,255,0.4)';
+  const highlight =
+    theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.9)';
+  const shadow =
+    theme.palette.mode === 'dark' ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.4)';
+  const baseBackground =
+    theme.palette.mode === 'dark'
+      ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
+          theme.palette.grey[700],
+          0.9,
+        )})`
+      : 'linear-gradient(180deg, #fafafa, #e5e5e5)';
 
-    if (mode === 'cool') {
-      const c = theme.palette.info.main;
-      return {
-        background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(c, 0.18)}`,
-        borderColor: alpha(c, 0.45),
-        '& .bdz-dot': { backgroundColor: c },
-      };
-    }
-    if (mode === 'heat') {
-      const c = theme.palette.error.main;
-      return {
-        background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(c, 0.18)}`,
-        borderColor: alpha(c, 0.45),
-        '& .bdz-dot': { backgroundColor: c },
-      };
-    }
-    return {
-      background:
-        theme.palette.mode === 'dark'
-          ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
-              theme.palette.grey[700],
-              0.9,
-            )})`
-          : 'linear-gradient(180deg, #fafafa, #e5e5e5)',
+  const tintBackground = (color: string) => ({
+    background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
+    borderColor: alpha(color, 0.45),
+    '& .bdz-dot': { backgroundColor: color },
+  });
+
+  const modeStyles: Record<Mode, SxProps<Theme>> = {
+    cool: tintBackground(theme.palette.info.main),
+    heat: tintBackground(theme.palette.error.main),
+    off: {
+      background: baseBackground,
       borderColor: 'divider',
       '& .bdz-dot': { backgroundColor: theme.palette.grey[400] },
-    };
+    },
   };
+
+  const editingSx = {
+    outline: `2px solid ${ring}`,
+    outlineOffset: -2,
+    '&::after': {
+      content: '""',
+      position: 'absolute',
+      inset: 0,
+      borderRadius: 'inherit',
+      boxShadow: `0 0 6px ${editGlow}`,
+      pointerEvents: 'none',
+    },
+    zIndex: 2,
+  } as const;
 
   return (
     <Box
@@ -223,6 +229,13 @@ export function BedDualZone({
             {zones.map(({ key, state }) => {
               const isEditing = editingSide === key;
               const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
+              const scheduleLabel = state.schedule?.running
+                ? 'Schedule running'
+                : state.schedule?.nextStart
+                ? `Starts at ${state.schedule.nextStart}`
+                : undefined;
+              const modeLabel =
+                state.mode === 'cool' ? 'Cooling' : state.mode === 'heat' ? 'Heating' : 'Off';
 
               return (
                 <ButtonBase
@@ -234,26 +247,9 @@ export function BedDualZone({
                   sx={{
                     ...baseZoneSx,
                     borderRadius: key === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
-                    ...zoneStyleForMode(state.mode),
-                    ...(isEditing
-                      ? {
-                          outline: `2px solid ${ring}`,
-                          outlineOffset: -2,
-                          '&::after': {
-                            content: '""',
-                            position: 'absolute',
-                            inset: 0,
-                            borderRadius: 'inherit',
-                            boxShadow: `0 0 6px ${editGlow}`,
-                            pointerEvents: 'none',
-                          },
-                        }
-                      : {}),
-                    transform: 'none',
-                    '&:hover': { transform: 'translateY(-1px)' },
-                    '&:active': { transform: 'translateY(0)' },
+                    ...modeStyles[state.mode],
+                    ...(isEditing ? editingSx : {}),
                     opacity: editingSide && !isEditing ? 0.6 : 1,
-                    zIndex: isEditing ? 2 : 0,
                   }}
                 >
               {/* State pill */}
@@ -278,11 +274,7 @@ export function BedDualZone({
                   userSelect: 'none',
                 }}
               >
-                {state.mode === 'cool'
-                  ? 'Cooling'
-                  : state.mode === 'heat'
-                  ? 'Heating'
-                  : 'Off'}
+                {modeLabel}
               </Typography>
 
               {/* Temperature display */}
@@ -300,7 +292,7 @@ export function BedDualZone({
                   {state.mode === 'cool' ? 'to cool' : 'to heat'} {state.targetTemp}°
                 </Typography>
               )}
-              {state.schedule && (
+              {scheduleLabel && (
                 <Typography
                   component="span"
                   sx={{
@@ -321,11 +313,7 @@ export function BedDualZone({
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {state.schedule.running
-                    ? 'Schedule running'
-                    : state.schedule.nextStart
-                    ? `Starts at ${state.schedule.nextStart}`
-                    : ''}
+                  {scheduleLabel}
                 </Typography>
               )}
 
