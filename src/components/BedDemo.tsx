@@ -7,7 +7,6 @@ import {
   Tab,
   FormControlLabel,
   Switch,
-  IconButton,
   Typography,
   AppBar,
   BottomNavigation,
@@ -15,28 +14,27 @@ import {
   TextField,
 } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
-import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { toUnit, fromUnit } from '@/utils/temperature';
+import TemperatureControl from './TemperatureControl';
 
 type Side = 'left' | 'right';
 
 export default function BedDemo() {
+  const BED_WIDTH = 360;
   const [zones, setZones] = React.useState<Record<Side, ZoneState>>({
     left: {
       mode: 'cool',
       currentTemp: 72,
       targetTemp: 68,
-      schedule: { running: false },
+      schedule: { running: false, away: false },
     },
     right: {
       mode: 'off',
       currentTemp: 70,
-      schedule: { running: false },
+      schedule: { running: false, away: false },
     },
   });
   const [editing, setEditing] = React.useState<Side>('left');
@@ -50,16 +48,17 @@ export default function BedDemo() {
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
 
+  const updateSchedule = (side: Side, updates: Partial<ZoneState['schedule']>) =>
+    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, ...updates } }));
+
   const tempCfg = unit === 'C'
     ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
     : { min: 55, max: 110, mid: 82, step: 1 };
 
-  const changeTemp = (side: Side, delta: number) =>
+  const setTemp = (side: Side, next: number) =>
     updateZone(side, (z) => {
-      const currentTarget = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
-      let next = currentTarget + delta;
-      next = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
-      const nextF = fromUnit(next, unit);
+      const clamped = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
+      const nextF = fromUnit(clamped, unit);
       const mode =
         z.mode === 'off'
           ? z.mode
@@ -83,13 +82,30 @@ export default function BedDemo() {
     });
 
   const toggleSchedule = (side: Side, running: boolean) =>
-    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, running } }));
+    updateZone(side, (z) => {
+      const sched = { ...z.schedule, running, ...(running ? { away: false } : {}) };
+      let next = { ...z, schedule: sched };
+      if (running && z.mode === 'off') {
+        const target = z.targetTemp ?? z.currentTemp;
+        const mode = target > z.currentTemp ? 'heat' : target < z.currentTemp ? 'cool' : 'heat';
+        next = { ...next, mode, targetTemp: target };
+      }
+      return next;
+    });
 
   const setScheduleStart = (side: Side, nextStart: string) =>
-    updateZone(side, (z) => ({
-      ...z,
-      schedule: { running: z.schedule?.running ?? false, nextStart },
-    }));
+    updateSchedule(side, { nextStart });
+
+  const toggleAway = (side: Side, away: boolean) =>
+    updateSchedule(
+      side,
+      away
+        ? { away, running: false, nextStart: undefined, alarm: undefined }
+        : { away },
+    );
+
+  const setAlarm = (side: Side, alarm: string) =>
+    updateSchedule(side, { alarm });
 
 
   const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';
@@ -102,14 +118,15 @@ export default function BedDemo() {
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
             right={zones.right}
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
-            width={360}
+            onPowerToggle={(s) => togglePower(s)}
+            width={BED_WIDTH}
             unit={unit}
             sideNames={sideNames}
           />
@@ -118,8 +135,10 @@ export default function BedDemo() {
             value={editing}
             onChange={(_, v) => v && setEditing(v)}
             aria-label="bed side controls"
-            textColor="secondary"
-            indicatorColor="secondary"
+            textColor="primary"
+            indicatorColor="primary"
+            variant="fullWidth"
+            sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
             <Tab label={sideNames.right} value="right" />
@@ -128,34 +147,23 @@ export default function BedDemo() {
           {(() => {
             const z = zones[editing];
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
-            return (
-              <Stack spacing={1} alignItems="center">
-                <IconButton
-                  color={z.mode === 'off' ? 'default' : 'secondary'}
-                  onClick={() => togglePower(editing)}
-                >
-                  <PowerSettingsNewIcon />
-                </IconButton>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
-                    <RemoveIcon />
-                  </IconButton>
-                  <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
-                    {target}
-                    {`°${unit}`}
-                  </Typography>
-                  <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
-                    <AddIcon />
-                  </IconButton>
-                </Stack>
-              </Stack>
-            );
+            return z.mode !== 'off' ? (
+              <TemperatureControl
+                key={editing}
+                value={target}
+                min={tempCfg.min}
+                max={tempCfg.max}
+                step={tempCfg.step}
+                unit={unit}
+                onChange={(v) => setTemp(editing, v)}
+              />
+            ) : null;
           })()}
         </Stack>
       ) : page === 'settings' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7 }}
         >
           <FormControlLabel
             control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
@@ -175,14 +183,15 @@ export default function BedDemo() {
       ) : (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
             right={zones.right}
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
-            width={360}
+            onPowerToggle={(s) => togglePower(s)}
+            width={BED_WIDTH}
             unit={unit}
             sideNames={sideNames}
           />
@@ -191,8 +200,10 @@ export default function BedDemo() {
             value={editing}
             onChange={(_, v) => v && setEditing(v)}
             aria-label="schedule controls"
-            textColor="secondary"
-            indicatorColor="secondary"
+            textColor="primary"
+            indicatorColor="primary"
+            variant="fullWidth"
+            sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
             <Tab label={sideNames.right} value="right" />
@@ -201,21 +212,43 @@ export default function BedDemo() {
           <FormControlLabel
             control={
               <Switch
+                checked={!!zones[editing].schedule?.away}
+                onChange={(e) => toggleAway(editing, e.target.checked)}
+              />
+            }
+            label="Away mode"
+          />
+
+          <FormControlLabel
+            control={
+              <Switch
                 checked={!!zones[editing].schedule?.running}
                 onChange={(e) => toggleSchedule(editing, e.target.checked)}
+                disabled={!!zones[editing].schedule?.away}
               />
             }
             label="Schedule running"
           />
 
-          <TextField
-            label="Starts at"
-            type="time"
-            value={zones[editing].schedule?.nextStart ?? ''}
-            onChange={(e) => setScheduleStart(editing, e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Stack>
+          {!zones[editing].schedule?.away && (
+            <TextField
+              label="Starts at"
+              type="time"
+              value={zones[editing].schedule?.nextStart ?? ''}
+              onChange={(e) => setScheduleStart(editing, e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+        )}
+
+        <TextField
+          label="Alarm"
+          type="time"
+          value={zones[editing].schedule?.alarm ?? ''}
+          onChange={(e) => setAlarm(editing, e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          disabled={!!zones[editing].schedule?.away}
+        />
+      </Stack>
       )}
       <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <BottomNavigation showLabels value={page} onChange={(_, v) => setPage(v)}>

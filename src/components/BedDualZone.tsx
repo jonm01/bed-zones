@@ -1,9 +1,18 @@
 'use client';
 
 import * as React from 'react';
-import { Box, ButtonBase, Typography } from '@mui/material';
+import {
+  Box,
+  ButtonBase,
+  Typography,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { formatTemp } from '@/utils/temperature';
 
 type Side = 'left' | 'right';
@@ -23,8 +32,8 @@ export interface ZoneState {
   currentTemp: number;
   /** Desired temperature when heating or cooling. */
   targetTemp?: number;
-  /** Optional schedule information for the zone. */
-  schedule?: { running: boolean; nextStart?: string };
+  /** Schedule information for the zone. */
+  schedule: { running: boolean; nextStart?: string; away?: boolean; alarm?: string };
 }
 
 /**
@@ -44,6 +53,8 @@ export interface BedDualZoneProps {
   editingSide?: Side | null;
   /** Callback fired when a side is clicked. */
   onSideClick?: (side: Side) => void;
+  /** Callback fired when a side's power button is clicked. */
+  onPowerToggle?: (side: Side) => void;
   /**
    * Maximum width of the rendered bed in pixels (default 360). The bed scales
    * down responsively on smaller screens.
@@ -66,6 +77,7 @@ export function BedDualZone({
   right,
   editingSide = null,
   onSideClick,
+  onPowerToggle,
   width = 360,
   sideNames,
   unit = 'F',
@@ -94,7 +106,6 @@ export function BedDualZone({
       'box-shadow .14s ease, transform .14s ease, opacity .14s ease, border-color .14s ease, background-color .14s ease',
     height: '100%',
     width: '100%',
-    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)',
     transform: 'none',
     '&:hover': { transform: 'translateY(-1px)' },
     '&:active': { transform: 'translateY(0)' },
@@ -109,8 +120,7 @@ export function BedDualZone({
 
   const tintBackground = (color: string) => ({
     background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
-    borderColor: alpha(color, 0.45),
-    '& .bdz-dot': { backgroundColor: color },
+    borderColor: 'divider',
   });
 
   const modeStyles: Record<Mode, SxProps<Theme>> = {
@@ -119,12 +129,10 @@ export function BedDualZone({
     off: {
       background: baseBackground,
       borderColor: 'divider',
-      '& .bdz-dot': { backgroundColor: theme.palette.grey[400] },
     },
   };
 
   const editingSx = {
-    boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -205,24 +213,46 @@ export function BedDualZone({
             {zones.map(({ key, state, name }) => {
               const isEditing = editingSide === key;
               const ariaLabel = `${name} side: ${state.mode}${isEditing ? ', editing' : ''}`;
-              const scheduleLabel = state.schedule?.running
-                ? 'Schedule running'
-                : state.schedule?.nextStart
-                ? `Starts at ${state.schedule.nextStart}`
-                : undefined;
+              const schedule = state.schedule;
+              let scheduleLabel: string | undefined;
+              let scheduleIcon: React.ReactElement | undefined;
+              if (schedule?.away) {
+                scheduleLabel = 'Away';
+                scheduleIcon = <FlightTakeoffIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              } else if (schedule?.running) {
+                scheduleLabel = 'Schedule running';
+                scheduleIcon = <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              } else if (schedule?.nextStart) {
+                scheduleLabel = `Starts at ${schedule.nextStart}`;
+                scheduleIcon = <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              }
+              const modeColor =
+                state.mode === 'cool'
+                  ? theme.palette.info.main
+                  : state.mode === 'heat'
+                  ? theme.palette.error.main
+                  : undefined;
+              const boxShadow = [
+                'inset 0 1px 2px rgba(0,0,0,0.12)',
+                ...(isEditing ? [`inset 0 0 0 2px ${ring}`] : []),
+              ].join(', ');
               return (
                 <ButtonBase
+                  component="div"
                   key={key}
                   onClick={() => onSideClick?.(key)}
+                  role="radio"
                   aria-label={ariaLabel}
-                  aria-pressed={isEditing}
+                  aria-checked={isEditing}
                   title={ariaLabel}
+                  tabIndex={0}
                   sx={{
                     ...baseZoneSx,
                     borderRadius: key === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
                     ...modeStyles[state.mode],
                     ...(isEditing ? editingSx : {}),
                     opacity: editingSide && !isEditing ? 0.6 : 1,
+                    boxShadow,
                   }}
                 >
               <Box
@@ -243,31 +273,89 @@ export function BedDualZone({
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
                   pointerEvents: 'none',
                   zIndex: 1,
-                }}
-              />
-              {/* Side label */}
-              <Typography
-                component="span"
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 10,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontSize: { xs: 10, sm: 11 },
-                  lineHeight: 1,
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 999,
-                  bgcolor: alpha(theme.palette.background.default, 0.9),
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backdropFilter: 'blur(2px)',
+                  color: 'text.secondary',
+                  textShadow:
+                    '0 1px 0 rgba(255,255,255,0.3), 0 -1px 0 rgba(0,0,0,0.4)',
                   userSelect: 'none',
-                  zIndex: 2,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                 }}
               >
                 {name}
-              </Typography>
+              </Box>
+
+              {/* Power button with optional schedule indicator */}
+              {onPowerToggle && (
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 8,
+                    left: 8,
+                    right: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-end',
+                    zIndex: 3,
+                  }}
+                >
+                  {scheduleLabel && (
+                    <Tooltip title={scheduleLabel} placement="top">
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          px: 0.5,
+                          py: 0.25,
+                          bgcolor: alpha(theme.palette.background.default, 0.9),
+                          borderRadius: 1,
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                          fontSize: 10,
+                          color: 'text.secondary',
+                          mr: 'auto',
+                        }}
+                      >
+                        {scheduleIcon}
+                        {scheduleLabel}
+                      </Box>
+                    </Tooltip>
+                  )}
+                  <IconButton
+                    size="small"
+                    disabled={!isEditing}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPowerToggle(key);
+                    }}
+                    sx={{
+                      bgcolor: alpha(theme.palette.background.default, 0.9),
+                      boxShadow: [
+                        '0 1px 2px rgba(0,0,0,0.4)',
+                        ...(modeColor
+                          ? [
+                              `0 0 0 2px ${alpha(modeColor, 0.8)}`,
+                              `0 0 6px ${alpha(modeColor, 0.6)}`,
+                            ]
+                          : []),
+                      ].join(', '),
+                      transition: 'box-shadow .2s ease',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.background.default, 0.7),
+                      },
+                    }}
+                    color={
+                      state.mode === 'cool'
+                        ? 'info'
+                        : state.mode === 'heat'
+                        ? 'error'
+                        : 'default'
+                    }
+                  >
+                    <PowerSettingsNewIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              )}
 
               {/* Temperature display */}
               <Typography
@@ -283,74 +371,60 @@ export function BedDualZone({
                 {formatTemp(state.currentTemp, unit)}{unitLabel}
               </Typography>
 
-              {state.mode !== 'off' && state.targetTemp !== undefined && (
+              {(() => {
+                const targetVisible =
+                  state.mode !== 'off' && state.targetTemp !== undefined;
+                const targetLabel = targetVisible
+                  ? state.currentTemp === state.targetTemp
+                    ? `Maintaining ${formatTemp(state.targetTemp!, unit)}${unitLabel}`
+                    : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
+                        state.targetTemp!,
+                        unit,
+                      )}${unitLabel}`
+                  : '';
+                return (
+                  <Typography
+                    component="span"
+                    aria-hidden={!targetVisible}
+                    sx={{
+                      fontSize: 12,
+                      mt: 0.5,
+                      color: 'text.secondary',
+                      userSelect: 'none',
+                      position: 'relative',
+                      zIndex: 2,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                      visibility: targetVisible ? 'visible' : 'hidden',
+                    }}
+                  >
+                    {targetLabel}
+                  </Typography>
+                );
+              })()}
+
+              {state.schedule?.alarm && (
                 <Typography
                   component="span"
                   sx={{
-                    fontSize: 12,
                     mt: 0.5,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    px: 0.5,
+                    py: 0.25,
+                    fontSize: 12,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
                     color: 'text.secondary',
-                    userSelect: 'none',
-                    position: 'relative',
                     zIndex: 2,
                     textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                   }}
                 >
-                  {state.currentTemp === state.targetTemp
-                    ? `Maintaining ${formatTemp(state.targetTemp, unit)}${unitLabel}`
-                    : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
-                        state.targetTemp,
-                        unit,
-                      )}${unitLabel}`}
+                  <AlarmIcon sx={{ fontSize: 12, mr: 0.25 }} />
+                  {state.schedule.alarm}
                 </Typography>
               )}
 
-              {scheduleLabel && (
-                <Box
-                  component="span"
-                  sx={{
-                    position: 'absolute',
-                    bottom: 8,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5,
-                    fontSize: { xs: 9, sm: 11 },
-                    px: 1,
-                    py: 0.25,
-                    borderRadius: 8,
-                    bgcolor: alpha(theme.palette.background.default, 0.9),
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    whiteSpace: 'nowrap',
-                    zIndex: 2,
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                  }}
-                >
-                  <AccessTimeIcon sx={{ fontSize: 'inherit' }} />
-                  {scheduleLabel}
-                </Box>
-              )}
-
-              {/* Colored dot */}
-              <Box
-                className="bdz-dot"
-                aria-hidden
-                sx={{
-                  position: 'absolute',
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  top: 12,
-                  right: 10,
-                  bgcolor: theme.palette.grey[400],
-                  border: '1px solid rgba(0,0,0,0.08)',
-                  zIndex: 2,
-                  boxShadow: '0 0 2px rgba(0,0,0,0.4)',
-                }}
-              />
             </ButtonBase>
           );
         })}
