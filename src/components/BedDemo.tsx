@@ -10,6 +10,7 @@ import {
   IconButton,
   Typography,
   AppBar,
+  Toolbar,
   BottomNavigation,
   BottomNavigationAction,
   TextField,
@@ -20,6 +21,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
@@ -30,15 +32,17 @@ export default function BedDemo() {
       mode: 'cool',
       currentTemp: 72,
       targetTemp: 68,
+      schedule: { running: false },
     },
     right: {
       mode: 'off',
       currentTemp: 70,
+      schedule: { running: false },
     },
   });
   const [editing, setEditing] = React.useState<Side>('left');
   const [unit, setUnit] = React.useState<'F' | 'C'>('F');
-  const [page, setPage] = React.useState<'home' | 'settings'>('home');
+  const [page, setPage] = React.useState<'home' | 'settings' | 'schedule'>('home');
   const [sideNames, setSideNames] = React.useState<{ left: string; right: string }>({
     left: 'Left',
     right: 'Right',
@@ -83,14 +87,26 @@ export default function BedDemo() {
       return { ...z, mode: 'off' };
     });
 
+  const toggleSchedule = (side: Side, running: boolean) =>
+    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, running } }));
+
   const { mode, toggleMode } = React.useContext(ColorModeContext);
+
+  const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';
 
   return (
     <>
+      <AppBar position="static" color="primary">
+        <Toolbar sx={{ justifyContent: 'center' }}>
+          <Typography variant="h6" component="div">
+            {pageTitle}
+          </Typography>
+        </Toolbar>
+      </AppBar>
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: '100vh', pb: 7, justifyContent: 'center' }}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, justifyContent: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -117,31 +133,33 @@ export default function BedDemo() {
             const z = zones[editing];
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
             return (
-              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-                <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
-                  <RemoveIcon />
-                </IconButton>
-                <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
-                  {target}
-                  {`°${unit}`}
-                </Typography>
-                <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
-                  <AddIcon />
-                </IconButton>
+              <Stack spacing={1} alignItems="center">
                 <IconButton
                   color={z.mode === 'off' ? 'default' : 'secondary'}
                   onClick={() => togglePower(editing)}
                 >
                   <PowerSettingsNewIcon />
                 </IconButton>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
+                    <RemoveIcon />
+                  </IconButton>
+                  <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
+                    {target}
+                    {`°${unit}`}
+                  </Typography>
+                  <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
+                    <AddIcon />
+                  </IconButton>
+                </Stack>
               </Stack>
             );
           })()}
         </Stack>
-      ) : (
+      ) : page === 'settings' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: '100vh', pb: 7, pt: 4 }}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, pt: 4 }}
         >
           <FormControlLabel
             control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
@@ -162,10 +180,47 @@ export default function BedDemo() {
             onChange={(e) => setSideNames((n) => ({ ...n, right: e.target.value }))}
           />
         </Stack>
+      ) : (
+        <Stack
+          spacing={2}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, justifyContent: 'center' }}
+        >
+          <BedDualZone
+            left={zones.left}
+            right={zones.right}
+            editingSide={editing}
+            onSideClick={(s) => setEditing(s)}
+            width={360}
+            unit={unit}
+            sideNames={sideNames}
+          />
+
+          <Tabs
+            value={editing}
+            onChange={(_, v) => v && setEditing(v)}
+            aria-label="schedule controls"
+            textColor="secondary"
+            indicatorColor="secondary"
+          >
+            <Tab label={sideNames.left} value="left" />
+            <Tab label={sideNames.right} value="right" />
+          </Tabs>
+
+          <FormControlLabel
+            control={
+              <Switch
+                checked={!!zones[editing].schedule?.running}
+                onChange={(e) => toggleSchedule(editing, e.target.checked)}
+              />
+            }
+            label="Schedule running"
+          />
+        </Stack>
       )}
       <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <BottomNavigation showLabels value={page} onChange={(_, v) => setPage(v)}>
           <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} />
+          <BottomNavigationAction label="Schedule" value="schedule" icon={<ScheduleIcon />} />
           <BottomNavigationAction label="Settings" value="settings" icon={<SettingsIcon />} />
         </BottomNavigation>
       </AppBar>
