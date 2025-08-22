@@ -43,7 +43,7 @@ export function TemperatureControl({
 
   const containerRef = React.useRef<HTMLDivElement>(null);
   const itemRefs = React.useRef(new Map<string, HTMLDivElement>());
-  const frame = React.useRef<number>();
+  const frame = React.useRef<number | null>(null);
   const isFirst = React.useRef(true);
   const prevValue = React.useRef(value);
   const suppressScroll = React.useRef(false);
