@@ -25,7 +25,7 @@ export interface TemperatureControlProps {
  * Control for adjusting a temperature.
  * Renders a vertical wheel of numbers for rapid sliding along with +/- buttons for fine tuning.
  */
-export function TemperatureControl({
+export default function TemperatureControl({
   value,
   min,
   max,
@@ -48,7 +48,7 @@ export function TemperatureControl({
   const prevValue = React.useRef(value);
   const suppressScroll = React.useRef(false);
   const userScrolling = React.useRef(false);
-  const scrollEndTimer = React.useRef<number>();
+  const scrollEndTimer = React.useRef<number | null>(null);
 
   const keyFor = React.useCallback((n: number) => n.toFixed(5), []);
 
@@ -205,6 +205,4 @@ export function TemperatureControl({
     </Stack>
   );
 }
-
-export default TemperatureControl;
 
