@@ -126,13 +126,7 @@ export default function BedDemo() {
             const z = zones[editing];
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
             return (
-              <Stack spacing={1} alignItems="center">
-                <IconButton
-                  color={z.mode === 'off' ? 'default' : 'secondary'}
-                  onClick={() => togglePower(editing)}
-                >
-                  <PowerSettingsNewIcon />
-                </IconButton>
+              <Stack direction="row" spacing={2} alignItems="center">
                 <TemperatureControl
                   value={target}
                   min={tempCfg.min}
@@ -141,6 +135,12 @@ export default function BedDemo() {
                   unit={unit}
                   onChange={(v) => setTemp(editing, v)}
                 />
+                <IconButton
+                  color={z.mode === 'off' ? 'default' : 'secondary'}
+                  onClick={() => togglePower(editing)}
+                >
+                  <PowerSettingsNewIcon />
+                </IconButton>
               </Stack>
             );
           })()}
