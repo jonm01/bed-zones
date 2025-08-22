@@ -351,8 +351,8 @@ export function BedDualZone({
                   size="small"
                   sx={{
                     position: 'absolute',
-                    bottom: 8,
-                    left: 8,
+                    bottom: 48,
+                    right: 10,
                     zIndex: 3,
                     bgcolor: alpha(theme.palette.background.default, 0.8),
                     color: 'text.secondary',
