@@ -23,7 +23,7 @@ export interface TemperatureControlProps {
 
 /**
  * Control for adjusting a temperature.
- * Renders a horizontal carousel of numbers for rapid sliding along with +/- buttons for fine tuning.
+ * Renders a vertical wheel of numbers for rapid sliding along with +/- buttons for fine tuning.
  */
 export function TemperatureControl({
   value,
@@ -53,7 +53,10 @@ export function TemperatureControl({
   const scrollToValue = React.useCallback(
     (v: number, smooth = true) => {
       const node = itemRefs.current.get(v);
-      node?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', inline: 'center', block: 'nearest' });
+      node?.scrollIntoView({
+        behavior: smooth ? 'smooth' : 'auto',
+        block: 'center',
+      });
     },
     [],
   );
@@ -67,13 +70,13 @@ export function TemperatureControl({
     if (frame.current) cancelAnimationFrame(frame.current);
     frame.current = requestAnimationFrame(() => {
       const container = containerRef.current!;
-      const center = container.scrollLeft + container.clientWidth / 2;
+      const center = container.scrollTop + container.clientHeight / 2;
       let closest = value;
       let minDist = Number.POSITIVE_INFINITY;
       numbers.forEach((n) => {
         const node = itemRefs.current.get(n);
         if (!node) return;
-        const itemCenter = node.offsetLeft + node.offsetWidth / 2;
+        const itemCenter = node.offsetTop + node.offsetHeight / 2;
         const dist = Math.abs(center - itemCenter);
         if (dist < minDist) {
           minDist = dist;
@@ -89,37 +92,55 @@ export function TemperatureControl({
       <IconButton onClick={() => adjust(-step)}>
         <RemoveIcon />
       </IconButton>
-      <Box
-        ref={containerRef}
-        onScroll={handleScroll}
-        sx={{
-          display: 'flex',
-          overflowX: 'auto',
-          scrollSnapType: 'x mandatory',
-          '&::-webkit-scrollbar': { display: 'none' },
-          width: 160,
-        }}
-      >
-        {numbers.map((n) => (
-          <Box
-            key={n}
-            ref={(el: HTMLDivElement | null) => {
-              if (el) itemRefs.current.set(n, el);
-            }}
-            sx={{
-              flex: '0 0 auto',
-              width: 40,
-              mx: 0.5,
-              textAlign: 'center',
-              scrollSnapAlign: 'center',
-              borderRadius: 1,
-              bgcolor: n === value ? 'primary.main' : 'transparent',
-              color: n === value ? 'primary.contrastText' : 'text.primary',
-            }}
-          >
-            <Typography>{n}</Typography>
-          </Box>
-        ))}
+      <Box sx={{ position: 'relative', height: 120, width: 60 }}>
+        <Box
+          ref={containerRef}
+          onScroll={handleScroll}
+          sx={{
+            height: '100%',
+            overflowY: 'auto',
+            scrollSnapType: 'y mandatory',
+            '&::-webkit-scrollbar': { display: 'none' },
+          }}
+        >
+          <Box sx={{ height: 40 }} />
+          {numbers.map((n) => (
+            <Box
+              key={n}
+              ref={(el: HTMLDivElement | null) => {
+                if (el) itemRefs.current.set(n, el);
+              }}
+              sx={{
+                height: 40,
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                scrollSnapAlign: 'center',
+                borderRadius: 1,
+                bgcolor: n === value ? 'primary.main' : 'transparent',
+                color: n === value ? 'primary.contrastText' : 'text.primary',
+              }}
+            >
+              <Typography>{n}</Typography>
+            </Box>
+          ))}
+          <Box sx={{ height: 40 }} />
+        </Box>
+        <Box
+          sx={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            width: '100%',
+            height: 40,
+            transform: 'translateY(-50%)',
+            borderTop: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        />
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
       <IconButton onClick={() => adjust(step)}>
