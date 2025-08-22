@@ -136,7 +136,9 @@ export function BedDualZone({
   } as const;
 
   const formatTemp = (t: number) =>
-    unit === 'C' ? Math.round(((t - 32) * 5) / 9) : Math.round(t);
+    unit === 'C'
+      ? Math.round(((t - 32) * 5) / 9 * 10) / 10
+      : Math.round(t * 10) / 10;
 
   const unitLabel = `°${unit}`;
 
