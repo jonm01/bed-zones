@@ -6,7 +6,6 @@ import {
   ButtonBase,
   Typography,
   IconButton,
-  Badge,
   Tooltip,
 } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
@@ -277,58 +276,73 @@ export function BedDualZone({
                 {name}
               </Box>
 
-              {/* Power button with optional schedule badge */}
+              {/* Power button with optional schedule indicator */}
               {onPowerToggle && (
-                <Tooltip
-                  title={scheduleLabel ?? ''}
-                  placement="top"
-                  disableHoverListener={!scheduleLabel}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 8,
+                    right: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
+                    zIndex: 3,
+                  }}
                 >
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                    badgeContent={
-                      scheduleLabel ? (
-                        <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                      ) : undefined
+                  {scheduleLabel && (
+                    <Tooltip title={scheduleLabel} placement="top">
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          px: 0.5,
+                          py: 0.25,
+                          bgcolor: alpha(theme.palette.background.default, 0.9),
+                          borderRadius: 1,
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                          fontSize: 10,
+                          color: 'text.secondary',
+                        }}
+                      >
+                        <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />
+                        {scheduleLabel}
+                      </Box>
+                    </Tooltip>
+                  )}
+                  <IconButton
+                    size="small"
+                    disabled={!isEditing}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onPowerToggle(key);
+                    }}
+                    sx={{
+                      bgcolor: alpha(theme.palette.background.default, 0.9),
+                      boxShadow: [
+                        '0 1px 2px rgba(0,0,0,0.4)',
+                        ...(modeColor
+                          ? [
+                              `0 0 0 2px ${alpha(modeColor, 0.8)}`,
+                              `0 0 6px ${alpha(modeColor, 0.6)}`,
+                            ]
+                          : []),
+                      ].join(', '),
+                      transition: 'box-shadow .2s ease',
+                      '&:hover': {
+                        bgcolor: alpha(theme.palette.background.default, 0.7),
+                      },
+                    }}
+                    color={
+                      state.mode === 'cool'
+                        ? 'info'
+                        : state.mode === 'heat'
+                        ? 'error'
+                        : 'default'
                     }
-                    sx={{ position: 'absolute', bottom: 8, right: 10, zIndex: 3 }}
                   >
-                    <IconButton
-                      size="small"
-                      disabled={!isEditing}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onPowerToggle(key);
-                      }}
-                      sx={{
-                        bgcolor: alpha(theme.palette.background.default, 0.9),
-                        boxShadow: [
-                          '0 1px 2px rgba(0,0,0,0.4)',
-                          ...(modeColor
-                            ? [
-                                `0 0 0 2px ${alpha(modeColor, 0.8)}`,
-                                `0 0 6px ${alpha(modeColor, 0.6)}`,
-                              ]
-                            : []),
-                        ].join(', '),
-                        transition: 'box-shadow .2s ease',
-                        '&:hover': {
-                          bgcolor: alpha(theme.palette.background.default, 0.7),
-                        },
-                      }}
-                      color={
-                        state.mode === 'cool'
-                          ? 'info'
-                          : state.mode === 'heat'
-                          ? 'error'
-                          : 'default'
-                      }
-                    >
-                      <PowerSettingsNewIcon fontSize="small" />
-                    </IconButton>
-                  </Badge>
-                </Tooltip>
+                    <PowerSettingsNewIcon fontSize="small" />
+                  </IconButton>
+                </Box>
               )}
 
               {/* Temperature display */}
