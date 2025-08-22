@@ -403,17 +403,18 @@ export function BedDualZone({
               })()}
 
               {state.schedule?.alarm && (
-                <Box
+                <Typography
+                  component="span"
                   sx={{
                     mt: 0.5,
                     display: 'inline-flex',
                     alignItems: 'center',
                     px: 0.5,
                     py: 0.25,
-                    bgcolor: alpha(theme.palette.background.default, 0.9),
+                    fontSize: 12,
+                    border: '1px solid',
+                    borderColor: 'divider',
                     borderRadius: 1,
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
-                    fontSize: 10,
                     color: 'text.secondary',
                     zIndex: 2,
                     textShadow: '0 1px 2px rgba(0,0,0,0.6)',
@@ -421,7 +422,7 @@ export function BedDualZone({
                 >
                   <AlarmIcon sx={{ fontSize: 12, mr: 0.25 }} />
                   {state.schedule.alarm}
-                </Box>
+                </Typography>
               )}
 
             </ButtonBase>

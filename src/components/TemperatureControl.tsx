@@ -195,6 +195,7 @@ export default function TemperatureControl({
           sx={{
             height: '100%',
             overflowY: 'auto',
+            overscrollBehavior: 'contain',
             scrollSnapType: 'y mandatory',
             WebkitOverflowScrolling: 'touch',
             maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',

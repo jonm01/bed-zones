@@ -101,7 +101,7 @@ export default function BedDemo() {
     updateZone(side, (z) => ({
       ...z,
       schedule: away
-        ? { ...z.schedule, away, running: false, nextStart: undefined }
+        ? { ...z.schedule, away, running: false, nextStart: undefined, alarm: undefined }
         : { ...z.schedule, away },
     }));
 
@@ -122,7 +122,7 @@ export default function BedDemo() {
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -167,7 +167,7 @@ export default function BedDemo() {
       ) : page === 'settings' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7 }}
         >
           <FormControlLabel
             control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
@@ -187,7 +187,7 @@ export default function BedDemo() {
       ) : (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -242,16 +242,17 @@ export default function BedDemo() {
               onChange={(e) => setScheduleStart(editing, e.target.value)}
               InputLabelProps={{ shrink: true }}
             />
-          )}
+        )}
 
-          <TextField
-            label="Alarm"
-            type="time"
-            value={zones[editing].schedule?.alarm ?? ''}
-            onChange={(e) => setAlarm(editing, e.target.value)}
-            InputLabelProps={{ shrink: true }}
-          />
-        </Stack>
+        <TextField
+          label="Alarm"
+          type="time"
+          value={zones[editing].schedule?.alarm ?? ''}
+          onChange={(e) => setAlarm(editing, e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          disabled={!!zones[editing].schedule?.away}
+        />
+      </Stack>
       )}
       <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <BottomNavigation showLabels value={page} onChange={(_, v) => setPage(v)}>
