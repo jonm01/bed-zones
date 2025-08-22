@@ -21,6 +21,7 @@ import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ScheduleIcon from '@mui/icons-material/Schedule';
+import { toUnit, fromUnit } from '@/utils/temperature';
 
 type Side = 'left' | 'right';
 
@@ -49,22 +50,16 @@ export default function BedDemo() {
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
 
-  const fToC = (f: number) => ((f - 32) * 5) / 9;
-  const cToF = (c: number) => (c * 9) / 5 + 32;
-  const toUnit = (t: number) =>
-    unit === 'C' ? Math.round(fToC(t) * 2) / 2 : Math.round(t);
-  const fromUnit = (t: number) => (unit === 'C' ? cToF(t) : t);
-
   const tempCfg = unit === 'C'
     ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
     : { min: 55, max: 110, mid: 82, step: 1 };
 
   const changeTemp = (side: Side, delta: number) =>
     updateZone(side, (z) => {
-      const currentTarget = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
+      const currentTarget = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
       let next = currentTarget + delta;
       next = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
-      const nextF = fromUnit(next);
+      const nextF = fromUnit(next, unit);
       const mode =
         z.mode === 'off'
           ? z.mode
@@ -132,7 +127,7 @@ export default function BedDemo() {
 
           {(() => {
             const z = zones[editing];
-            const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
+            const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
             return (
               <Stack spacing={1} alignItems="center">
                 <IconButton
