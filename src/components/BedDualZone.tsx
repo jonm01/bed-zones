@@ -257,32 +257,18 @@ export function BedDualZone({
                   boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
                   pointerEvents: 'none',
                   zIndex: 1,
-                }}
-              />
-              {/* Side label */}
-              <Typography
-                component="span"
-                sx={{
-                  position: 'absolute',
-                  top: 8,
-                  left: '50%',
-                  transform: 'translateX(-50%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   fontSize: { xs: 10, sm: 11 },
-                  lineHeight: 1,
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 999,
-                  bgcolor: alpha(theme.palette.background.default, 0.9),
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  backdropFilter: 'blur(2px)',
+                  color: 'text.secondary',
+                  textShadow:
+                    '0 1px 0 rgba(255,255,255,0.3), 0 -1px 0 rgba(0,0,0,0.4)',
                   userSelect: 'none',
-                  zIndex: 2,
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                 }}
               >
                 {name}
-              </Typography>
+              </Box>
 
               {/* Power button placed in the bottom-right corner for clarity */}
               {onPowerToggle && (
@@ -362,22 +348,15 @@ export function BedDualZone({
                 <Box
                   component="span"
                   sx={{
-                    position: 'absolute',
-                    top: 8,
-                    left: 8,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 0.5,
-                    fontSize: { xs: 9, sm: 11 },
-                    px: 1,
-                    py: 0.25,
-                    borderRadius: 8,
-                    bgcolor: alpha(theme.palette.background.default, 0.9),
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    whiteSpace: 'nowrap',
+                    fontSize: 11,
+                    mt: 0.5,
+                    color: 'text.secondary',
+                    userSelect: 'none',
+                    position: 'relative',
                     zIndex: 2,
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                     textShadow: '0 1px 2px rgba(0,0,0,0.6)',
                   }}
                 >
