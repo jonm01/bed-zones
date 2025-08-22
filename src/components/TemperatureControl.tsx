@@ -185,8 +185,8 @@ export default function TemperatureControl({
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton onClick={() => adjust(-step)}>
-        <RemoveIcon />
+      <IconButton size="small" onClick={() => adjust(-step)}>
+        <RemoveIcon fontSize="small" />
       </IconButton>
       <Box sx={{ position: 'relative', height: 120, width: 60 }}>
         <Box
@@ -198,8 +198,8 @@ export default function TemperatureControl({
             overscrollBehavior: 'contain',
             scrollSnapType: 'y mandatory',
             WebkitOverflowScrolling: 'touch',
-            maskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)',
+            maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
             '&::-webkit-scrollbar': { display: 'none' },
           }}
         >
@@ -212,15 +212,14 @@ export default function TemperatureControl({
               }}
               sx={{
                 height: 40,
-                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
-                borderRadius: 2,
-                border: '2px solid',
-                borderColor: n === value ? 'primary.main' : 'transparent',
+                color: n === value ? 'text.primary' : 'text.secondary',
                 fontWeight: n === value ? 600 : 400,
+                fontSize: n === value ? 20 : 16,
+                transition: 'all 0.2s ease',
               }}
             >
               <Typography>{n}</Typography>
@@ -228,10 +227,21 @@ export default function TemperatureControl({
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
+        <Box
+          sx={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+          }}
+        />
       </Box>
-      <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton onClick={() => adjust(step)}>
-        <AddIcon />
+      <Typography sx={{ fontSize: 20, color: 'text.secondary' }}>{`°${unit}`}</Typography>
+      <IconButton size="small" onClick={() => adjust(step)}>
+        <AddIcon fontSize="small" />
       </IconButton>
     </Stack>
   );
