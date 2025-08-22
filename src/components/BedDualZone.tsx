@@ -231,8 +231,8 @@ export function BedDualZone({
                 sx={{
                   position: 'absolute',
                   top: 8,
-                  left: key === 'left' ? 8 : 2,
-                  right: key === 'left' ? 2 : 8,
+                  left: 8,
+                  right: 8,
                   height: '15%',
                   borderRadius:
                     key === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
