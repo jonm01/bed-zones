@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { Box, ButtonBase, Typography } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 
 type Side = 'left' | 'right';
 type Mode = 'off' | 'cool' | 'heat';
@@ -195,7 +196,7 @@ export function BedDualZone({
             borderColor: 'divider',
           }}
         >
-          {/* pillow */}
+          {/* pillows */}
           <Box
             sx={{
               position: 'absolute',
@@ -203,23 +204,35 @@ export function BedDualZone({
               left: 8,
               right: 8,
               height: '15%',
-              borderRadius: '16px 16px 8px 8px',
-              background:
-                theme.palette.mode === 'dark'
-                  ? `linear-gradient(180deg, ${alpha(
-                      theme.palette.background.paper,
-                      0.95,
-                    )}, ${alpha(theme.palette.grey[800], 0.9)})`
-                  : 'linear-gradient(180deg,#fff,#e0e0e0)',
-              border: '1px solid',
-              borderColor: 'divider',
-              boxShadow: theme.palette.mode === 'dark'
-                ? '0 2px 4px rgba(0,0,0,0.4)'
-                : '0 2px 4px rgba(0,0,0,0.15)',
+              display: 'flex',
+              gap: 4,
               pointerEvents: 'none',
               zIndex: 3,
             }}
-          />
+          >
+            {(['left', 'right'] as const).map((side) => (
+              <Box
+                key={side}
+                sx={{
+                  flex: 1,
+                  borderRadius: side === 'left' ? '16px 8px 8px 8px' : '8px 16px 8px 8px',
+                  background:
+                    theme.palette.mode === 'dark'
+                      ? `linear-gradient(180deg, ${alpha(
+                          theme.palette.background.paper,
+                          0.95,
+                        )}, ${alpha(theme.palette.grey[800], 0.9)})`
+                      : 'linear-gradient(180deg,#fff,#e0e0e0)',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  boxShadow:
+                    theme.palette.mode === 'dark'
+                      ? '0 2px 4px rgba(0,0,0,0.4)'
+                      : '0 2px 4px rgba(0,0,0,0.15)',
+                }}
+              />
+            ))}
+          </Box>
           <Box
             sx={{
               position: 'relative',
@@ -311,15 +324,18 @@ export function BedDualZone({
               )}
 
               {scheduleLabel && (
-                <Typography
+                <Box
                   component="span"
                   sx={{
                     position: 'absolute',
                     bottom: 8,
                     left: '50%',
                     transform: 'translateX(-50%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 0.5,
                     fontSize: { xs: 9, sm: 11 },
-                    px: 0.75,
+                    px: 1,
                     py: 0.25,
                     borderRadius: 8,
                     bgcolor:
@@ -331,8 +347,9 @@ export function BedDualZone({
                     whiteSpace: 'nowrap',
                   }}
                 >
+                  <AccessTimeIcon sx={{ fontSize: 'inherit' }} />
                   {scheduleLabel}
-                </Typography>
+                </Box>
               )}
 
               {/* Colored dot */}

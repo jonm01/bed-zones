@@ -217,8 +217,10 @@ export default function BedDemo() {
 
           <TextField
             label="Starts at"
+            type="time"
             value={zones[editing].schedule?.nextStart ?? ''}
             onChange={(e) => setScheduleStart(editing, e.target.value)}
+            InputLabelProps={{ shrink: true }}
           />
         </Stack>
       )}
