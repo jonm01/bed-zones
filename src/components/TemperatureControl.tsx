@@ -42,10 +42,12 @@ export function TemperatureControl({
   }, [min, max, step]);
 
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const itemRefs = React.useRef(new Map<number, HTMLDivElement>());
+  const itemRefs = React.useRef(new Map<string, HTMLDivElement>());
   const frame = React.useRef<number>();
   const isFirst = React.useRef(true);
   const prevValue = React.useRef(value);
+
+  const keyFor = React.useCallback((n: number) => n.toFixed(5), []);
 
   const bounce = (dir: 'min' | 'max') => {
     const el = containerRef.current;
@@ -62,13 +64,24 @@ export function TemperatureControl({
 
   const scrollToValue = React.useCallback(
     (v: number, smooth = true) => {
-      const node = itemRefs.current.get(v);
+      const node = itemRefs.current.get(keyFor(v));
       node?.scrollIntoView({
         behavior: smooth ? 'smooth' : 'auto',
         block: 'center',
+        inline: 'nearest',
       });
     },
-    [],
+    [keyFor],
+  );
+
+  const snap = React.useCallback(
+    (v: number) =>
+      Number(
+        (
+          Math.round((v - min) / step) * step + min
+        ).toFixed(5),
+      ),
+    [min, step],
   );
 
   const adjust = (delta: number) => {
@@ -80,6 +93,7 @@ export function TemperatureControl({
       next = max;
       bounce('max');
     }
+    next = snap(next);
     onChange(next);
     scrollToValue(next, true);
   };
@@ -102,7 +116,7 @@ export function TemperatureControl({
       let closest = value;
       let minDist = Number.POSITIVE_INFINITY;
       numbers.forEach((n) => {
-        const node = itemRefs.current.get(n);
+        const node = itemRefs.current.get(keyFor(n));
         if (!node) return;
         const itemCenter = node.offsetTop + node.offsetHeight / 2;
         const dist = Math.abs(center - itemCenter);
@@ -111,11 +125,12 @@ export function TemperatureControl({
           closest = n;
         }
       });
-      if (closest !== value) onChange(closest);
+      const snapped = snap(closest);
+      if (snapped !== value) onChange(snapped);
 
       const atTop = container.scrollTop <= 0;
       const atBottom = container.scrollTop >= container.scrollHeight - container.clientHeight;
-      if ((atTop && closest === min) || (atBottom && closest === max)) {
+      if ((atTop && snapped === min) || (atBottom && snapped === max)) {
         bounce(atTop ? 'min' : 'max');
       }
     });
@@ -145,7 +160,7 @@ export function TemperatureControl({
             <Box
               key={n}
               ref={(el: HTMLDivElement | null) => {
-                if (el) itemRefs.current.set(n, el);
+                if (el) itemRefs.current.set(keyFor(n), el);
               }}
               sx={{
                 height: 40,
