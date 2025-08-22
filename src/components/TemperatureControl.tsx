@@ -266,8 +266,18 @@ export default function TemperatureControl({
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
+        <Typography
+          sx={{
+            position: 'absolute',
+            top: 4,
+            right: 4,
+            zIndex: 2,
+            fontSize: 14,
+            color: 'text.secondary',
+            pointerEvents: 'none',
+          }}
+        >{`°${unit}`}</Typography>
       </Box>
-      <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
       <IconButton size="small" onClick={() => adjust(step)} sx={buttonSx}>
         <AddIcon />
       </IconButton>

@@ -118,7 +118,16 @@ export default function BedDemo() {
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
+          sx={{
+            p: 2,
+            maxWidth: BED_WIDTH,
+            mx: 'auto',
+            height: 'calc(100dvh - 56px)',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            pb: 7,
+            alignItems: 'center',
+          }}
         >
           <BedDualZone
             left={zones.left}
@@ -183,7 +192,16 @@ export default function BedDemo() {
       ) : (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', height: 'calc(100dvh - 56px)', overflowY: 'auto', pb: 7, alignItems: 'center' }}
+          sx={{
+            p: 2,
+            maxWidth: BED_WIDTH,
+            mx: 'auto',
+            height: 'calc(100dvh - 56px)',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            pb: 7,
+            alignItems: 'center',
+          }}
         >
           <BedDualZone
             left={zones.left}
