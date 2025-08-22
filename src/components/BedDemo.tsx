@@ -7,7 +7,6 @@ import {
   Tab,
   FormControlLabel,
   Switch,
-  IconButton,
   Typography,
   AppBar,
   BottomNavigation,
@@ -15,7 +14,6 @@ import {
   TextField,
 } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
-import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ScheduleIcon from '@mui/icons-material/Schedule';
@@ -106,6 +104,7 @@ export default function BedDemo() {
             right={zones.right}
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
+            onPowerToggle={(s) => togglePower(s)}
             width={360}
             unit={unit}
             sideNames={sideNames}
@@ -125,26 +124,16 @@ export default function BedDemo() {
           {(() => {
             const z = zones[editing];
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
-            return (
-              <Stack direction="row" spacing={2} alignItems="center">
-                {z.mode !== 'off' && (
-                  <TemperatureControl
-                    value={target}
-                    min={tempCfg.min}
-                    max={tempCfg.max}
-                    step={tempCfg.step}
-                    unit={unit}
-                    onChange={(v) => setTemp(editing, v)}
-                  />
-                )}
-                <IconButton
-                  color={z.mode === 'off' ? 'default' : 'secondary'}
-                  onClick={() => togglePower(editing)}
-                >
-                  <PowerSettingsNewIcon />
-                </IconButton>
-              </Stack>
-            );
+            return z.mode !== 'off' ? (
+              <TemperatureControl
+                value={target}
+                min={tempCfg.min}
+                max={tempCfg.max}
+                step={tempCfg.step}
+                unit={unit}
+                onChange={(v) => setTemp(editing, v)}
+              />
+            ) : null;
           })()}
         </Stack>
       ) : page === 'settings' ? (
@@ -177,6 +166,7 @@ export default function BedDemo() {
             right={zones.right}
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
+            onPowerToggle={(s) => togglePower(s)}
             width={360}
             unit={unit}
             sideNames={sideNames}

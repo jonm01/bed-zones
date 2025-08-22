@@ -1,9 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { Box, ButtonBase, Typography } from '@mui/material';
+import { Box, ButtonBase, Typography, IconButton } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { formatTemp } from '@/utils/temperature';
 
 type Side = 'left' | 'right';
@@ -44,6 +45,8 @@ export interface BedDualZoneProps {
   editingSide?: Side | null;
   /** Callback fired when a side is clicked. */
   onSideClick?: (side: Side) => void;
+  /** Callback fired when a side's power button is clicked. */
+  onPowerToggle?: (side: Side) => void;
   /**
    * Maximum width of the rendered bed in pixels (default 360). The bed scales
    * down responsively on smaller screens.
@@ -66,6 +69,7 @@ export function BedDualZone({
   right,
   editingSide = null,
   onSideClick,
+  onPowerToggle,
   width = 360,
   sideNames,
   unit = 'F',
@@ -268,6 +272,33 @@ export function BedDualZone({
               >
                 {name}
               </Typography>
+
+              {/* Power button */}
+              {onPowerToggle && (
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onPowerToggle(key);
+                  }}
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 10,
+                    zIndex: 3,
+                    bgcolor: alpha(theme.palette.background.default, 0.9),
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                    '&:hover': {
+                      bgcolor: alpha(theme.palette.background.default, 0.7),
+                    },
+                  }}
+                  color={state.mode === 'off' ? 'default' : 'secondary'}
+                >
+                  <PowerSettingsNewIcon fontSize="small" />
+                </IconButton>
+              )}
 
               {/* Temperature display */}
               <Typography
