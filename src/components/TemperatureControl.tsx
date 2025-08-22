@@ -58,7 +58,7 @@ export default function TemperatureControl({
     el.animate(
       [
         { transform: 'translateY(0)' },
-        { transform: `translateY(${dir === 'min' ? 12 : -12}px)` },
+        { transform: `translateY(${dir === 'min' ? 8 : -8}px)` },
         { transform: 'translateY(0)' },
       ],
       { duration: 300, easing: 'cubic-bezier(.34,1.56,.64,1)' },
@@ -72,7 +72,31 @@ export default function TemperatureControl({
       if (!container || !node) return;
       const top =
         node.offsetTop - container.clientHeight / 2 + node.offsetHeight / 2;
-      container.scrollTo({ top, behavior: smooth ? 'smooth' : 'auto' });
+
+      if (!smooth) {
+        container.scrollTop = top;
+        return;
+      }
+
+      const start = container.scrollTop;
+      const diff = top - start;
+      const duration = 400; // slower, gentler animation
+      let startTime: number | null = null;
+
+      if (frame.current) cancelAnimationFrame(frame.current);
+      const step = (time: number) => {
+        if (startTime === null) startTime = time;
+        const t = Math.min(1, (time - startTime) / duration);
+        // easeOutCubic for a mild finish
+        const eased = 1 - Math.pow(1 - t, 3);
+        container.scrollTop = start + diff * eased;
+        if (t < 1) {
+          frame.current = requestAnimationFrame(step);
+        } else {
+          frame.current = null;
+        }
+      };
+      frame.current = requestAnimationFrame(step);
     },
     [keyFor],
   );
