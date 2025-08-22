@@ -224,11 +224,14 @@ export function BedDualZone({
               ].join(', ');
               return (
                 <ButtonBase
+                  component="div"
                   key={key}
                   onClick={() => onSideClick?.(key)}
+                  role="radio"
                   aria-label={ariaLabel}
-                  aria-pressed={isEditing}
+                  aria-checked={isEditing}
                   title={ariaLabel}
+                  tabIndex={0}
                   sx={{
                     ...baseZoneSx,
                     borderRadius: key === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
