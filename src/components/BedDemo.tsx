@@ -44,14 +44,17 @@ export default function BedDemo() {
   };
 
   return (
-    <Stack spacing={2} sx={{ p: 3 }}>
+    <Stack
+      spacing={2}
+      sx={{ p: 2, maxWidth: 360, mx: 'auto', height: '100vh', justifyContent: 'center' }}
+    >
       <BedDualZone
         left={left}
         right={right}
         editingSide={editing}
         onSideClick={(s) => setEditing(s)}
         labels={{ left: 'Left', right: 'Right' }}
-        width={420}
+        width={360}
       />
 
       <Tabs

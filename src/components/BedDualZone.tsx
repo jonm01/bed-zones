@@ -154,7 +154,7 @@ export function BedDualZone({
             theme.palette.mode === 'dark'
               ? '0 4px 12px rgba(0,0,0,0.5)'
               : '0 4px 12px rgba(0,0,0,0.15)',
-          aspectRatio: '3 / 4',
+          aspectRatio: '3 / 3.2',
           overflow: 'hidden',
         }}
       >
@@ -182,7 +182,7 @@ export function BedDualZone({
               top: 4,
               left: 8,
               right: 8,
-              height: '18%',
+              height: '15%',
               borderRadius: '16px 16px 8px 8px',
               background:
                 theme.palette.mode === 'dark'
