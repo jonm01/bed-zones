@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
-import { ThemeProvider, CssBaseline } from '@mui/material';
-import theme from '@/theme';
+import type { ReactNode } from 'react';
 import { Roboto } from 'next/font/google';
+import { Providers } from './providers';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -16,16 +15,11 @@ export const metadata: Metadata = {
   description: 'Two-zone bed UI demo',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={roboto.variable}>
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            {children}
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
