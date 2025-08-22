@@ -1,0 +1,39 @@
+.bed {
+  display: flex;
+  width: 200px;
+  height: 100px;
+  border: 1px solid #ccc;
+}
+
+.zone {
+  flex: 1;
+  position: relative;
+  transition: background-color 0.3s, outline 0.3s;
+}
+
+.off {
+  background: #e0e0e0;
+}
+
+.cooling {
+  background: #4aa8ff;
+}
+
+.heating {
+  background: #ff6b6b;
+}
+
+.editing {
+  outline: 3px solid #ffd700;
+}
+
+.selected {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
