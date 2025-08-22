@@ -235,20 +235,23 @@ export function BedDualZone({
                     ...baseZoneSx,
                     borderRadius: key === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
                     ...zoneStyleForMode(state.mode),
-                    boxShadow: isEditing
-                      ? `${baseZoneSx.boxShadow}, inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}`
-                      : baseZoneSx.boxShadow,
-                    transform: isEditing ? 'scale(1.02)' : 'scale(1)',
-                    '&:hover': {
-                      transform: isEditing
-                        ? 'scale(1.02) translateY(-1px)'
-                        : 'translateY(-1px)',
-                    },
-                    '&:active': {
-                      transform: isEditing
-                        ? 'scale(1.02) translateY(0)'
-                        : 'translateY(0)',
-                    },
+                    ...(isEditing
+                      ? {
+                          outline: `2px solid ${ring}`,
+                          outlineOffset: -2,
+                          '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            inset: 0,
+                            borderRadius: 'inherit',
+                            boxShadow: `0 0 6px ${editGlow}`,
+                            pointerEvents: 'none',
+                          },
+                        }
+                      : {}),
+                    transform: 'none',
+                    '&:hover': { transform: 'translateY(-1px)' },
+                    '&:active': { transform: 'translateY(0)' },
                     opacity: editingSide && !isEditing ? 0.6 : 1,
                     zIndex: isEditing ? 2 : 0,
                   }}
