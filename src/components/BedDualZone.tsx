@@ -298,20 +298,21 @@ export function BedDualZone({
               >
                 {formatTemp(state.currentTemp)}{unitLabel}
               </Typography>
-              {state.mode !== 'off' && state.targetTemp !== undefined && (
-                <Typography
-                  component="span"
-                  sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary' }}
-                >
-                  {state.mode === 'cool' ? 'Cooling to' : 'Heating to'} {formatTemp(state.targetTemp)}{unitLabel}
-                </Typography>
-              )}
+
+              {/* Side name */}
+              <Typography
+                component="span"
+                sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
+              >
+                {name}
+              </Typography>
+
               {scheduleLabel && (
                 <Typography
                   component="span"
                   sx={{
                     position: 'absolute',
-                    bottom: 28,
+                    bottom: 8,
                     left: '50%',
                     transform: 'translateX(-50%)',
                     fontSize: { xs: 9, sm: 11 },
@@ -330,32 +331,6 @@ export function BedDualZone({
                   {scheduleLabel}
                 </Typography>
               )}
-
-              {/* Side name */}
-              <Typography
-                component="span"
-                sx={{
-                  position: 'absolute',
-                  bottom: 8,
-                  left: key === 'left' ? 10 : undefined,
-                  right: key === 'right' ? 10 : undefined,
-                  fontSize: { xs: 11, sm: 12 },
-                  lineHeight: 1,
-                  px: 0.75,
-                  py: 0.25,
-                  borderRadius: 8,
-                  bgcolor:
-                    theme.palette.mode === 'dark'
-                      ? alpha(theme.palette.background.default, 0.9)
-                      : 'rgba(255,255,255,0.9)',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  userSelect: 'none',
-                  pointerEvents: 'none',
-                }}
-              >
-                {name}
-              </Typography>
 
               {/* Colored dot */}
               <Box
