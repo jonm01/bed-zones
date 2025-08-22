@@ -70,28 +70,34 @@ export function BedDualZone({
 
   const baseZoneSx = {
     position: 'relative',
-    borderRadius: '16px',
     border: '1px solid',
     borderColor: 'divider',
-    backgroundColor:
-      theme.palette.mode === 'dark'
-        ? alpha(theme.palette.grey[800], 0.5)
-        : theme.palette.grey[50],
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: 'box-shadow .14s ease, transform .08s ease, border-color .14s ease, background-color .14s ease',
+    transition:
+      'box-shadow .14s ease, transform .08s ease, border-color .14s ease, background-color .14s ease',
     height: '100%',
     width: '100%',
+    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)',
     '&:hover': { transform: 'translateY(-1px)' },
     '&:active': { transform: 'translateY(0)' },
   } as const;
 
   const zoneStyleForMode = (mode: Mode) => {
+    const highlight =
+      theme.palette.mode === 'dark'
+        ? 'rgba(255,255,255,0.05)'
+        : 'rgba(255,255,255,0.9)';
+    const shadow =
+      theme.palette.mode === 'dark'
+        ? 'rgba(0,0,0,0.1)'
+        : 'rgba(255,255,255,0.4)';
+
     if (mode === 'cool') {
       const c = theme.palette.info.main;
       return {
-        background: `linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0)), ${alpha(c, 0.12)}`,
+        background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(c, 0.18)}`,
         borderColor: alpha(c, 0.45),
         '& .bdz-dot': { backgroundColor: c },
       };
@@ -99,16 +105,19 @@ export function BedDualZone({
     if (mode === 'heat') {
       const c = theme.palette.error.main;
       return {
-        background: `linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0)), ${alpha(c, 0.12)}`,
+        background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(c, 0.18)}`,
         borderColor: alpha(c, 0.45),
         '& .bdz-dot': { backgroundColor: c },
       };
     }
     return {
-      backgroundColor:
+      background:
         theme.palette.mode === 'dark'
-          ? alpha(theme.palette.grey[800], 0.5)
-          : theme.palette.grey[50],
+          ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
+              theme.palette.grey[700],
+              0.9,
+            )})`
+          : 'linear-gradient(180deg, #fafafa, #e5e5e5)',
       borderColor: 'divider',
       '& .bdz-dot': { backgroundColor: theme.palette.grey[400] },
     };
@@ -127,68 +136,107 @@ export function BedDualZone({
       <Box
         sx={{
           position: 'relative',
-          borderRadius: '24px',
+          borderRadius: '28px',
+          p: '6px',
           border: '1px solid',
           borderColor: 'divider',
-          p: '4px',
-          bgcolor:
+          background:
             theme.palette.mode === 'dark'
-              ? alpha(theme.palette.grey[700], 0.5)
-              : theme.palette.grey[200],
+              ? `linear-gradient(180deg, ${alpha(theme.palette.grey[700], 0.6)}, ${alpha(
+                  theme.palette.grey[800],
+                  0.6,
+                )})`
+              : 'linear-gradient(145deg,#e0d5c0,#c6b49e)',
           boxShadow:
             theme.palette.mode === 'dark'
-              ? undefined
-              : '0 2px 4px rgba(0,0,0,.06)',
+              ? '0 4px 12px rgba(0,0,0,0.5)'
+              : '0 4px 12px rgba(0,0,0,0.15)',
           aspectRatio: '7 / 4',
           overflow: 'hidden',
         }}
       >
-        {/* pillow */}
         <Box
           sx={{
             position: 'absolute',
-            top: 4,
-            left: 4,
-            right: 4,
-            height: '18%',
-            borderRadius: '16px 16px 8px 8px',
-            bgcolor:
+            inset: 6,
+            borderRadius: '20px',
+            overflow: 'hidden',
+            background:
               theme.palette.mode === 'dark'
-                ? alpha(theme.palette.background.paper, 0.9)
-                : theme.palette.grey[100],
+                ? `linear-gradient(180deg, ${alpha(theme.palette.grey[800], 0.9)}, ${alpha(
+                    theme.palette.grey[700],
+                    0.9,
+                  )})`
+                : 'linear-gradient(180deg,#fff,#e9e9e9)',
             border: '1px solid',
             borderColor: 'divider',
-            pointerEvents: 'none',
-          }}
-        />
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '2px',
-            borderRadius: '18px',
-            height: '100%',
           }}
         >
-          {zones.map(({ key, state }) => {
-            const isEditing = editingSide === key;
-            const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
-
-          return (
-            <ButtonBase
-              key={key}
-              onClick={() => onSideClick?.(key)}
-              aria-label={ariaLabel}
-              aria-pressed={isEditing}
-              title={ariaLabel}
+          {/* pillow */}
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 4,
+              left: 8,
+              right: 8,
+              height: '18%',
+              borderRadius: '16px 16px 8px 8px',
+              background:
+                theme.palette.mode === 'dark'
+                  ? `linear-gradient(180deg, ${alpha(
+                      theme.palette.background.paper,
+                      0.95,
+                    )}, ${alpha(theme.palette.grey[800], 0.9)})`
+                  : 'linear-gradient(180deg,#fff,#e0e0e0)',
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow: theme.palette.mode === 'dark'
+                ? '0 2px 4px rgba(0,0,0,0.4)'
+                : '0 2px 4px rgba(0,0,0,0.15)',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              height: '100%',
+            }}
+          >
+            <Box
+              aria-hidden
               sx={{
-                ...baseZoneSx,
-                ...zoneStyleForMode(state.mode),
-                boxShadow: isEditing
-                  ? `inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}`
-                  : undefined,
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: '50%',
+                width: '1px',
+                bgcolor: 'divider',
+                pointerEvents: 'none',
+                zIndex: 1,
               }}
-            >
+            />
+            {zones.map(({ key, state }) => {
+              const isEditing = editingSide === key;
+              const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
+
+              return (
+                <ButtonBase
+                  key={key}
+                  onClick={() => onSideClick?.(key)}
+                  aria-label={ariaLabel}
+                  aria-pressed={isEditing}
+                  title={ariaLabel}
+                  sx={{
+                    ...baseZoneSx,
+                    borderRadius: key === 'left' ? '16px 0 0 16px' : '0 16px 16px 0',
+                    ...zoneStyleForMode(state.mode),
+                    boxShadow: isEditing
+                      ? `${baseZoneSx.boxShadow}, inset 0 0 0 2px ${ring}, 0 0 0 6px ${editGlow}`
+                      : baseZoneSx.boxShadow,
+                  }}
+                >
               {/* State pill */}
               <Typography
                 component="span"
@@ -277,6 +325,7 @@ export function BedDualZone({
             </ButtonBase>
           );
         })}
+          </Box>
         </Box>
       </Box>
 
