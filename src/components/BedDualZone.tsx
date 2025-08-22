@@ -363,9 +363,8 @@ export function BedDualZone({
                   component="span"
                   sx={{
                     position: 'absolute',
-                    bottom: 8,
-                    left: '50%',
-                    transform: 'translateX(-50%)',
+                    top: 8,
+                    left: 8,
                     display: 'flex',
                     alignItems: 'center',
                     gap: 0.5,
