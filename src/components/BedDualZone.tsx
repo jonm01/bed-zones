@@ -112,7 +112,7 @@ export function BedDualZone({
 
   const tintBackground = (color: string) => ({
     background: `linear-gradient(180deg, ${highlight}, ${shadow}), ${alpha(color, 0.18)}`,
-    borderColor: alpha(color, 0.45),
+    borderColor: 'divider',
     '& .bdz-dot': { backgroundColor: color },
   });
 
@@ -220,7 +220,6 @@ export function BedDualZone({
                   : undefined;
               const boxShadow = [
                 'inset 0 1px 2px rgba(0,0,0,0.12)',
-                ...(modeColor ? [`0 0 0 2px ${modeColor}`] : []),
                 ...(isEditing ? [`inset 0 0 0 2px ${ring}`] : []),
               ].join(', ');
               return (
@@ -298,19 +297,24 @@ export function BedDualZone({
                     right: 10,
                     zIndex: 3,
                     bgcolor: alpha(theme.palette.background.default, 0.9),
-                    border: '1px solid',
-                    borderColor:
-                      state.mode === 'cool'
-                        ? theme.palette.info.main
-                        : state.mode === 'heat'
-                        ? theme.palette.error.main
-                        : 'divider',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                    boxShadow: [
+                      '0 1px 2px rgba(0,0,0,0.4)',
+                      ...(modeColor
+                        ? [`0 0 0 2px ${alpha(modeColor, 0.8)}`, `0 0 6px ${alpha(modeColor, 0.6)}`]
+                        : []),
+                    ].join(', '),
+                    transition: 'box-shadow .2s ease',
                     '&:hover': {
                       bgcolor: alpha(theme.palette.background.default, 0.7),
                     },
                   }}
-                  color={state.mode === 'off' ? 'default' : 'secondary'}
+                  color={
+                    state.mode === 'cool'
+                      ? 'info'
+                      : state.mode === 'heat'
+                      ? 'error'
+                      : 'default'
+                  }
                 >
                   <PowerSettingsNewIcon fontSize="small" />
                 </IconButton>
