@@ -23,6 +23,7 @@ import TemperatureControl from './TemperatureControl';
 type Side = 'left' | 'right';
 
 export default function BedDemo() {
+  const BED_WIDTH = 360;
   const [zones, setZones] = React.useState<Record<Side, ZoneState>>({
     left: {
       mode: 'cool',
@@ -97,7 +98,7 @@ export default function BedDemo() {
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -105,7 +106,7 @@ export default function BedDemo() {
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
             onPowerToggle={(s) => togglePower(s)}
-            width={360}
+            width={BED_WIDTH}
             unit={unit}
             sideNames={sideNames}
           />
@@ -114,8 +115,9 @@ export default function BedDemo() {
             value={editing}
             onChange={(_, v) => v && setEditing(v)}
             aria-label="bed side controls"
-            textColor="secondary"
-            indicatorColor="secondary"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
             <Tab label={sideNames.right} value="right" />
@@ -140,7 +142,7 @@ export default function BedDemo() {
       ) : page === 'settings' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
         >
           <FormControlLabel
             control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
@@ -160,7 +162,7 @@ export default function BedDemo() {
       ) : (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
+          sx={{ p: 2, maxWidth: BED_WIDTH, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -168,7 +170,7 @@ export default function BedDemo() {
             editingSide={editing}
             onSideClick={(s) => setEditing(s)}
             onPowerToggle={(s) => togglePower(s)}
-            width={360}
+            width={BED_WIDTH}
             unit={unit}
             sideNames={sideNames}
           />
@@ -177,8 +179,9 @@ export default function BedDemo() {
             value={editing}
             onChange={(_, v) => v && setEditing(v)}
             aria-label="schedule controls"
-            textColor="secondary"
-            indicatorColor="secondary"
+            textColor="primary"
+            indicatorColor="primary"
+            sx={{ width: BED_WIDTH }}
           >
             <Tab label={sideNames.left} value="left" />
             <Tab label={sideNames.right} value="right" />
