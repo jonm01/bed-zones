@@ -127,14 +127,16 @@ export default function BedDemo() {
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
             return (
               <Stack direction="row" spacing={2} alignItems="center">
-                <TemperatureControl
-                  value={target}
-                  min={tempCfg.min}
-                  max={tempCfg.max}
-                  step={tempCfg.step}
-                  unit={unit}
-                  onChange={(v) => setTemp(editing, v)}
-                />
+                {z.mode !== 'off' && (
+                  <TemperatureControl
+                    value={target}
+                    min={tempCfg.min}
+                    max={tempCfg.max}
+                    step={tempCfg.step}
+                    unit={unit}
+                    onChange={(v) => setTemp(editing, v)}
+                  />
+                )}
                 <IconButton
                   color={z.mode === 'off' ? 'default' : 'secondary'}
                   onClick={() => togglePower(editing)}
