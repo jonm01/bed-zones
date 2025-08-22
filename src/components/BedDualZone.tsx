@@ -282,10 +282,11 @@ export function BedDualZone({
                   sx={{
                     position: 'absolute',
                     bottom: 8,
+                    left: 8,
                     right: 8,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: 0.5,
+                    justifyContent: 'flex-end',
                     zIndex: 3,
                   }}
                 >
@@ -302,6 +303,7 @@ export function BedDualZone({
                           boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                           fontSize: 10,
                           color: 'text.secondary',
+                          mr: 'auto',
                         }}
                       >
                         <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />
@@ -359,27 +361,36 @@ export function BedDualZone({
                 {formatTemp(state.currentTemp, unit)}{unitLabel}
               </Typography>
 
-              {state.mode !== 'off' && state.targetTemp !== undefined && (
-                <Typography
-                  component="span"
-                  sx={{
-                    fontSize: 12,
-                    mt: 0.5,
-                    color: 'text.secondary',
-                    userSelect: 'none',
-                    position: 'relative',
-                    zIndex: 2,
-                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
-                  }}
-                >
-                  {state.currentTemp === state.targetTemp
-                    ? `Maintaining ${formatTemp(state.targetTemp, unit)}${unitLabel}`
+              {(() => {
+                const targetVisible =
+                  state.mode !== 'off' && state.targetTemp !== undefined;
+                const targetLabel = targetVisible
+                  ? state.currentTemp === state.targetTemp
+                    ? `Maintaining ${formatTemp(state.targetTemp!, unit)}${unitLabel}`
                     : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
-                        state.targetTemp,
+                        state.targetTemp!,
                         unit,
-                      )}${unitLabel}`}
-                </Typography>
-              )}
+                      )}${unitLabel}`
+                  : '';
+                return (
+                  <Typography
+                    component="span"
+                    aria-hidden={!targetVisible}
+                    sx={{
+                      fontSize: 12,
+                      mt: 0.5,
+                      color: 'text.secondary',
+                      userSelect: 'none',
+                      position: 'relative',
+                      zIndex: 2,
+                      textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                      visibility: targetVisible ? 'visible' : 'hidden',
+                    }}
+                  >
+                    {targetLabel}
+                  </Typography>
+                );
+              })()}
 
             </ButtonBase>
           );
