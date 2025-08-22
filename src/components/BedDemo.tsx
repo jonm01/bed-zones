@@ -10,7 +10,6 @@ import {
   IconButton,
   Typography,
   AppBar,
-  Toolbar,
   BottomNavigation,
   BottomNavigationAction,
   TextField,
@@ -96,17 +95,13 @@ export default function BedDemo() {
 
   return (
     <>
-      <AppBar position="static" color="primary">
-        <Toolbar sx={{ justifyContent: 'center' }}>
-          <Typography variant="h6" component="div">
-            {pageTitle}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <Typography variant="h6" align="center" sx={{ mt: 1 }}>
+        {pageTitle}
+      </Typography>
       {page === 'home' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, justifyContent: 'center' }}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
@@ -159,7 +154,7 @@ export default function BedDemo() {
       ) : page === 'settings' ? (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, pt: 4 }}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7 }}
         >
           <FormControlLabel
             control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
@@ -183,7 +178,7 @@ export default function BedDemo() {
       ) : (
         <Stack
           spacing={2}
-          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, justifyContent: 'center' }}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: 'calc(100vh - 56px)', pb: 7, alignItems: 'center' }}
         >
           <BedDualZone
             left={zones.left}
