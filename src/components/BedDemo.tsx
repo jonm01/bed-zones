@@ -29,12 +29,12 @@ export default function BedDemo() {
       mode: 'cool',
       currentTemp: 72,
       targetTemp: 68,
-      schedule: { running: false },
+      schedule: { running: false, away: false },
     },
     right: {
       mode: 'off',
       currentTemp: 70,
-      schedule: { running: false },
+      schedule: { running: false, away: false },
     },
   });
   const [editing, setEditing] = React.useState<Side>('left');
@@ -79,12 +79,36 @@ export default function BedDemo() {
     });
 
   const toggleSchedule = (side: Side, running: boolean) =>
-    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, running } }));
+    updateZone(side, (z) => {
+      const sched = { ...z.schedule, running };
+      if (running) sched.away = false;
+      let next = { ...z, schedule: sched };
+      if (running && z.mode === 'off') {
+        const target = z.targetTemp ?? z.currentTemp;
+        const mode = target > z.currentTemp ? 'heat' : target < z.currentTemp ? 'cool' : 'heat';
+        next = { ...next, mode, targetTemp: target };
+      }
+      return next;
+    });
 
   const setScheduleStart = (side: Side, nextStart: string) =>
     updateZone(side, (z) => ({
       ...z,
-      schedule: { running: z.schedule?.running ?? false, nextStart },
+      schedule: { ...z.schedule, nextStart },
+    }));
+
+  const toggleAway = (side: Side, away: boolean) =>
+    updateZone(side, (z) => ({
+      ...z,
+      schedule: away
+        ? { ...z.schedule, away, running: false, nextStart: undefined }
+        : { ...z.schedule, away },
+    }));
+
+  const setAlarm = (side: Side, alarm: string) =>
+    updateZone(side, (z) => ({
+      ...z,
+      schedule: { ...z.schedule, alarm },
     }));
 
 
@@ -192,18 +216,39 @@ export default function BedDemo() {
           <FormControlLabel
             control={
               <Switch
+                checked={!!zones[editing].schedule?.away}
+                onChange={(e) => toggleAway(editing, e.target.checked)}
+              />
+            }
+            label="Away mode"
+          />
+
+          <FormControlLabel
+            control={
+              <Switch
                 checked={!!zones[editing].schedule?.running}
                 onChange={(e) => toggleSchedule(editing, e.target.checked)}
+                disabled={!!zones[editing].schedule?.away}
               />
             }
             label="Schedule running"
           />
 
+          {!zones[editing].schedule?.away && (
+            <TextField
+              label="Starts at"
+              type="time"
+              value={zones[editing].schedule?.nextStart ?? ''}
+              onChange={(e) => setScheduleStart(editing, e.target.value)}
+              InputLabelProps={{ shrink: true }}
+            />
+          )}
+
           <TextField
-            label="Starts at"
+            label="Alarm"
             type="time"
-            value={zones[editing].schedule?.nextStart ?? ''}
-            onChange={(e) => setScheduleStart(editing, e.target.value)}
+            value={zones[editing].schedule?.alarm ?? ''}
+            onChange={(e) => setAlarm(editing, e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
         </Stack>

@@ -10,6 +10,8 @@ import {
 } from '@mui/material';
 import { alpha, useTheme, SxProps, Theme } from '@mui/material/styles';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import FlightTakeoffIcon from '@mui/icons-material/FlightTakeoff';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { formatTemp } from '@/utils/temperature';
 
@@ -31,7 +33,7 @@ export interface ZoneState {
   /** Desired temperature when heating or cooling. */
   targetTemp?: number;
   /** Optional schedule information for the zone. */
-  schedule?: { running: boolean; nextStart?: string };
+  schedule?: { running: boolean; nextStart?: string; away?: boolean; alarm?: string };
 }
 
 /**
@@ -211,11 +213,19 @@ export function BedDualZone({
             {zones.map(({ key, state, name }) => {
               const isEditing = editingSide === key;
               const ariaLabel = `${name} side: ${state.mode}${isEditing ? ', editing' : ''}`;
-              const scheduleLabel = state.schedule?.running
-                ? 'Schedule running'
-                : state.schedule?.nextStart
-                ? `Starts at ${state.schedule.nextStart}`
-                : undefined;
+              const schedule = state.schedule;
+              let scheduleLabel: string | undefined;
+              let scheduleIcon: React.ReactElement | undefined;
+              if (schedule?.away) {
+                scheduleLabel = 'Away';
+                scheduleIcon = <FlightTakeoffIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              } else if (schedule?.running) {
+                scheduleLabel = 'Schedule running';
+                scheduleIcon = <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              } else if (schedule?.nextStart) {
+                scheduleLabel = `Starts at ${schedule.nextStart}`;
+                scheduleIcon = <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />;
+              }
               const modeColor =
                 state.mode === 'cool'
                   ? theme.palette.info.main
@@ -306,7 +316,7 @@ export function BedDualZone({
                           mr: 'auto',
                         }}
                       >
-                        <AccessTimeIcon sx={{ fontSize: 12, mr: 0.25 }} />
+                        {scheduleIcon}
                         {scheduleLabel}
                       </Box>
                     </Tooltip>
@@ -391,6 +401,28 @@ export function BedDualZone({
                   </Typography>
                 );
               })()}
+
+              {state.schedule?.alarm && (
+                <Box
+                  sx={{
+                    mt: 0.5,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    px: 0.5,
+                    py: 0.25,
+                    bgcolor: alpha(theme.palette.background.default, 0.9),
+                    borderRadius: 1,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                    fontSize: 10,
+                    color: 'text.secondary',
+                    zIndex: 2,
+                    textShadow: '0 1px 2px rgba(0,0,0,0.6)',
+                  }}
+                >
+                  <AlarmIcon sx={{ fontSize: 12, mr: 0.25 }} />
+                  {state.schedule.alarm}
+                </Box>
+              )}
 
             </ButtonBase>
           );
