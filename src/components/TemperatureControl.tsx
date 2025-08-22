@@ -135,7 +135,13 @@ export default function TemperatureControl({
       prevValue.current = value;
     }
     if (!userScrolling.current) {
+      suppressScroll.current = true;
       scrollToValue(value, !isFirst.current);
+      const id = window.setTimeout(() => {
+        suppressScroll.current = false;
+      }, 400);
+      isFirst.current = false;
+      return () => window.clearTimeout(id);
     }
     isFirst.current = false;
   }, [value, scrollToValue]);

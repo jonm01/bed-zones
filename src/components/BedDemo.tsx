@@ -126,6 +126,7 @@ export default function BedDemo() {
             const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid, unit), unit);
             return z.mode !== 'off' ? (
               <TemperatureControl
+                key={editing}
                 value={target}
                 min={tempCfg.min}
                 max={tempCfg.max}

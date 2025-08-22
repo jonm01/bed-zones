@@ -98,7 +98,6 @@ export function BedDualZone({
       'box-shadow .14s ease, transform .14s ease, opacity .14s ease, border-color .14s ease, background-color .14s ease',
     height: '100%',
     width: '100%',
-    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.12)',
     transform: 'none',
     '&:hover': { transform: 'translateY(-1px)' },
     '&:active': { transform: 'translateY(0)' },
@@ -128,7 +127,6 @@ export function BedDualZone({
   };
 
   const editingSx = {
-    boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -214,6 +212,17 @@ export function BedDualZone({
                 : state.schedule?.nextStart
                 ? `Starts at ${state.schedule.nextStart}`
                 : undefined;
+              const modeColor =
+                state.mode === 'cool'
+                  ? theme.palette.info.main
+                  : state.mode === 'heat'
+                  ? theme.palette.error.main
+                  : undefined;
+              const boxShadow = [
+                'inset 0 1px 2px rgba(0,0,0,0.12)',
+                ...(modeColor ? [`0 0 0 2px ${modeColor}`] : []),
+                ...(isEditing ? [`inset 0 0 0 2px ${ring}`] : []),
+              ].join(', ');
               return (
                 <ButtonBase
                   key={key}
@@ -227,6 +236,7 @@ export function BedDualZone({
                     ...modeStyles[state.mode],
                     ...(isEditing ? editingSx : {}),
                     opacity: editingSide && !isEditing ? 0.6 : 1,
+                    boxShadow,
                   }}
                 >
               <Box
@@ -277,6 +287,7 @@ export function BedDualZone({
               {onPowerToggle && (
                 <IconButton
                   size="small"
+                  disabled={!isEditing}
                   onClick={(e) => {
                     e.stopPropagation();
                     onPowerToggle(key);
@@ -288,7 +299,12 @@ export function BedDualZone({
                     zIndex: 3,
                     bgcolor: alpha(theme.palette.background.default, 0.9),
                     border: '1px solid',
-                    borderColor: 'divider',
+                    borderColor:
+                      state.mode === 'cool'
+                        ? theme.palette.info.main
+                        : state.mode === 'heat'
+                        ? theme.palette.error.main
+                        : 'divider',
                     boxShadow: '0 1px 2px rgba(0,0,0,0.4)',
                     '&:hover': {
                       bgcolor: alpha(theme.palette.background.default, 0.7),
