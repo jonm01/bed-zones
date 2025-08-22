@@ -48,6 +48,9 @@ export default function BedDemo() {
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
 
+  const updateSchedule = (side: Side, updates: Partial<ZoneState['schedule']>) =>
+    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, ...updates } }));
+
   const tempCfg = unit === 'C'
     ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
     : { min: 55, max: 110, mid: 82, step: 1 };
@@ -80,8 +83,7 @@ export default function BedDemo() {
 
   const toggleSchedule = (side: Side, running: boolean) =>
     updateZone(side, (z) => {
-      const sched = { ...z.schedule, running };
-      if (running) sched.away = false;
+      const sched = { ...z.schedule, running, ...(running ? { away: false } : {}) };
       let next = { ...z, schedule: sched };
       if (running && z.mode === 'off') {
         const target = z.targetTemp ?? z.currentTemp;
@@ -92,24 +94,18 @@ export default function BedDemo() {
     });
 
   const setScheduleStart = (side: Side, nextStart: string) =>
-    updateZone(side, (z) => ({
-      ...z,
-      schedule: { ...z.schedule, nextStart },
-    }));
+    updateSchedule(side, { nextStart });
 
   const toggleAway = (side: Side, away: boolean) =>
-    updateZone(side, (z) => ({
-      ...z,
-      schedule: away
-        ? { ...z.schedule, away, running: false, nextStart: undefined, alarm: undefined }
-        : { ...z.schedule, away },
-    }));
+    updateSchedule(
+      side,
+      away
+        ? { away, running: false, nextStart: undefined, alarm: undefined }
+        : { away },
+    );
 
   const setAlarm = (side: Side, alarm: string) =>
-    updateZone(side, (z) => ({
-      ...z,
-      schedule: { ...z.schedule, alarm },
-    }));
+    updateSchedule(side, { alarm });
 
 
   const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';

@@ -32,8 +32,8 @@ export interface ZoneState {
   currentTemp: number;
   /** Desired temperature when heating or cooling. */
   targetTemp?: number;
-  /** Optional schedule information for the zone. */
-  schedule?: { running: boolean; nextStart?: string; away?: boolean; alarm?: string };
+  /** Schedule information for the zone. */
+  schedule: { running: boolean; nextStart?: string; away?: boolean; alarm?: string };
 }
 
 /**
