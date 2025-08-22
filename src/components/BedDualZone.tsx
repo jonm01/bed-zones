@@ -47,8 +47,14 @@ export interface BedDualZoneProps {
    * down responsively on smaller screens.
    */
   width?: number;
-  /** Optional labels displayed beneath each zone. */
-  labels?: { left?: string; right?: string };
+  /** Names displayed for each side; defaults to "Left" and "Right". */
+  sideNames?: { left?: string; right?: string };
+  /**
+   * Temperature unit used for display. Values in `left` and `right` are
+   * assumed to be provided in Fahrenheit and will be converted if `unit` is
+   * `'C'`.
+   */
+  unit?: 'F' | 'C';
   /** Additional styles for the root element. */
   sx?: SxProps<Theme>;
 }
@@ -59,13 +65,16 @@ export function BedDualZone({
   editingSide = null,
   onSideClick,
   width = 360,
-  labels,
+  sideNames,
+  unit = 'F',
   sx,
 }: BedDualZoneProps) {
   const theme = useTheme();
+  const leftName = sideNames?.left ?? 'Left';
+  const rightName = sideNames?.right ?? 'Right';
   const zones = [
-    { key: 'left' as const, state: left, label: labels?.left ?? 'Left' },
-    { key: 'right' as const, state: right, label: labels?.right ?? 'Right' },
+    { key: 'left' as const, state: left, name: leftName },
+    { key: 'right' as const, state: right, name: rightName },
   ];
 
   const ring = theme.palette.mode === 'dark' ? theme.palette.grey[200] : theme.palette.grey[900];
@@ -76,6 +85,7 @@ export function BedDualZone({
     border: '1px solid',
     borderColor: 'divider',
     display: 'inline-flex',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     transition:
@@ -117,8 +127,7 @@ export function BedDualZone({
   };
 
   const editingSx = {
-    outline: `2px solid ${ring}`,
-    outlineOffset: -2,
+    boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
     '&::after': {
       content: '""',
       position: 'absolute',
@@ -129,6 +138,11 @@ export function BedDualZone({
     },
     zIndex: 2,
   } as const;
+
+  const formatTemp = (t: number) =>
+    unit === 'C' ? Math.round(((t - 32) * 5) / 9) : Math.round(t);
+
+  const unitLabel = `°${unit}`;
 
   return (
     <Box
@@ -203,6 +217,7 @@ export function BedDualZone({
                 ? '0 2px 4px rgba(0,0,0,0.4)'
                 : '0 2px 4px rgba(0,0,0,0.15)',
               pointerEvents: 'none',
+              zIndex: 3,
             }}
           />
           <Box
@@ -226,17 +241,14 @@ export function BedDualZone({
                 zIndex: 1,
               }}
             />
-            {zones.map(({ key, state }) => {
+            {zones.map(({ key, state, name }) => {
               const isEditing = editingSide === key;
-              const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
+              const ariaLabel = `${name} side: ${state.mode}${isEditing ? ', editing' : ''}`;
               const scheduleLabel = state.schedule?.running
                 ? 'Schedule running'
                 : state.schedule?.nextStart
                 ? `Starts at ${state.schedule.nextStart}`
                 : undefined;
-              const modeLabel =
-                state.mode === 'cool' ? 'Cooling' : state.mode === 'heat' ? 'Heating' : 'Off';
-
               return (
                 <ButtonBase
                   key={key}
@@ -252,7 +264,7 @@ export function BedDualZone({
                     opacity: editingSide && !isEditing ? 0.6 : 1,
                   }}
                 >
-              {/* State pill */}
+              {/* Side label */}
               <Typography
                 component="span"
                 sx={{
@@ -274,7 +286,7 @@ export function BedDualZone({
                   userSelect: 'none',
                 }}
               >
-                {modeLabel}
+                {name}
               </Typography>
 
               {/* Temperature display */}
@@ -282,16 +294,22 @@ export function BedDualZone({
                 component="span"
                 sx={{ fontSize: { xs: 24, sm: 32 }, fontWeight: 600 }}
               >
-                {state.currentTemp}°
+                {formatTemp(state.currentTemp)}{unitLabel}
               </Typography>
+
               {state.mode !== 'off' && state.targetTemp !== undefined && (
                 <Typography
                   component="span"
-                  sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary' }}
+                  sx={{ fontSize: 12, mt: 0.5, color: 'text.secondary', userSelect: 'none' }}
                 >
-                  {state.mode === 'cool' ? 'to cool' : 'to heat'} {state.targetTemp}°
+                  {state.currentTemp === state.targetTemp
+                    ? `Maintaining ${formatTemp(state.targetTemp)}${unitLabel}`
+                    : `${state.mode === 'cool' ? 'Cooling to' : 'Heating to'} ${formatTemp(
+                        state.targetTemp,
+                      )}${unitLabel}`}
                 </Typography>
               )}
+
               {scheduleLabel && (
                 <Typography
                   component="span"
@@ -338,13 +356,6 @@ export function BedDualZone({
           </Box>
         </Box>
       </Box>
-
-      {(labels?.left || labels?.right) && (
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, fontSize: 12, color: 'text.secondary' }} aria-hidden>
-          <span>{labels?.left ?? ''}</span>
-          <span style={{ textAlign: 'right' }}>{labels?.right ?? ''}</span>
-        </Box>
-      )}
     </Box>
   );
 }
