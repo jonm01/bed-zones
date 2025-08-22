@@ -9,11 +9,17 @@ import {
   Switch,
   IconButton,
   Typography,
+  AppBar,
+  BottomNavigation,
+  BottomNavigationAction,
+  TextField,
 } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import HomeIcon from '@mui/icons-material/Home';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
@@ -32,6 +38,11 @@ export default function BedDemo() {
   });
   const [editing, setEditing] = React.useState<Side>('left');
   const [unit, setUnit] = React.useState<'F' | 'C'>('F');
+  const [page, setPage] = React.useState<'home' | 'settings'>('home');
+  const [sideNames, setSideNames] = React.useState<{ left: string; right: string }>({
+    left: 'Left',
+    right: 'Right',
+  });
 
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
@@ -75,65 +86,89 @@ export default function BedDemo() {
   const { mode, toggleMode } = React.useContext(ColorModeContext);
 
   return (
-    <Stack
-      spacing={2}
-      sx={{ p: 2, maxWidth: 360, mx: 'auto', height: '100vh', justifyContent: 'center' }}
-    >
-      <Stack direction="row" justifyContent="flex-end" spacing={1}>
-        <FormControlLabel
-          control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
-          label="Dark mode"
-          sx={{ mr: 0 }}
-        />
-        <FormControlLabel
-          control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
-          label="°C"
-        />
-      </Stack>
-      <BedDualZone
-        left={zones.left}
-        right={zones.right}
-        editingSide={editing}
-        onSideClick={(s) => setEditing(s)}
-        width={360}
-        unit={unit}
-      />
+    <>
+      {page === 'home' ? (
+        <Stack
+          spacing={2}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: '100vh', pb: 7, justifyContent: 'center' }}
+        >
+          <BedDualZone
+            left={zones.left}
+            right={zones.right}
+            editingSide={editing}
+            onSideClick={(s) => setEditing(s)}
+            width={360}
+            unit={unit}
+            sideNames={sideNames}
+          />
 
-      <Tabs
-        value={editing}
-        onChange={(_, v) => v && setEditing(v)}
-        aria-label="bed side controls"
-        textColor="secondary"
-        indicatorColor="secondary"
-      >
-        <Tab label="Left" value="left" />
-        <Tab label="Right" value="right" />
-      </Tabs>
+          <Tabs
+            value={editing}
+            onChange={(_, v) => v && setEditing(v)}
+            aria-label="bed side controls"
+            textColor="secondary"
+            indicatorColor="secondary"
+          >
+            <Tab label={sideNames.left} value="left" />
+            <Tab label={sideNames.right} value="right" />
+          </Tabs>
 
-      {(() => {
-        const z = zones[editing];
-        const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
-        return (
-          <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
-            <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
-              <RemoveIcon />
-            </IconButton>
-            <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
-              {target}
-              {`°${unit}`}
-            </Typography>
-            <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
-              <AddIcon />
-            </IconButton>
-            <IconButton
-              color={z.mode === 'off' ? 'default' : 'secondary'}
-              onClick={() => togglePower(editing)}
-            >
-              <PowerSettingsNewIcon />
-            </IconButton>
-          </Stack>
-        );
-      })()}
-    </Stack>
+          {(() => {
+            const z = zones[editing];
+            const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
+            return (
+              <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+                <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
+                  <RemoveIcon />
+                </IconButton>
+                <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
+                  {target}
+                  {`°${unit}`}
+                </Typography>
+                <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
+                  <AddIcon />
+                </IconButton>
+                <IconButton
+                  color={z.mode === 'off' ? 'default' : 'secondary'}
+                  onClick={() => togglePower(editing)}
+                >
+                  <PowerSettingsNewIcon />
+                </IconButton>
+              </Stack>
+            );
+          })()}
+        </Stack>
+      ) : (
+        <Stack
+          spacing={2}
+          sx={{ p: 2, maxWidth: 360, mx: 'auto', minHeight: '100vh', pb: 7, pt: 4 }}
+        >
+          <FormControlLabel
+            control={<Switch checked={mode === 'dark'} onChange={() => toggleMode()} />}
+            label="Dark mode"
+          />
+          <FormControlLabel
+            control={<Switch checked={unit === 'C'} onChange={(e) => setUnit(e.target.checked ? 'C' : 'F')} />}
+            label="Show °C"
+          />
+          <TextField
+            label="Left name"
+            value={sideNames.left}
+            onChange={(e) => setSideNames((n) => ({ ...n, left: e.target.value }))}
+          />
+          <TextField
+            label="Right name"
+            value={sideNames.right}
+            onChange={(e) => setSideNames((n) => ({ ...n, right: e.target.value }))}
+          />
+        </Stack>
+      )}
+      <AppBar position="fixed" color="primary" sx={{ top: 'auto', bottom: 0 }}>
+        <BottomNavigation showLabels value={page} onChange={(_, v) => setPage(v)}>
+          <BottomNavigationAction label="Home" value="home" icon={<HomeIcon />} />
+          <BottomNavigationAction label="Settings" value="settings" icon={<SettingsIcon />} />
+        </BottomNavigation>
+      </AppBar>
+    </>
   );
 }
