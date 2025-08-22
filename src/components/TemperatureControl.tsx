@@ -185,10 +185,36 @@ export default function TemperatureControl({
 
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton onClick={() => adjust(-step)}>
+      <IconButton size="small" onClick={() => adjust(-step)}>
         <RemoveIcon />
       </IconButton>
-      <Box sx={{ position: 'relative', height: 120, width: 60 }}>
+      <Box
+        sx={{
+          position: 'relative',
+          height: 120,
+          width: 60,
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          overflow: 'hidden',
+          boxShadow: 1,
+        }}
+      >
+        <Box
+          sx={{
+            pointerEvents: 'none',
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            height: 40,
+            transform: 'translateY(-50%)',
+            borderRadius: 1,
+            bgcolor: 'action.hover',
+            zIndex: 1,
+          }}
+        />
         <Box
           ref={containerRef}
           onScroll={handleScroll}
@@ -212,25 +238,29 @@ export default function TemperatureControl({
               }}
               sx={{
                 height: 40,
-                textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 scrollSnapAlign: 'center',
-                borderRadius: 2,
-                border: '2px solid',
-                borderColor: n === value ? 'primary.main' : 'transparent',
-                fontWeight: n === value ? 600 : 400,
               }}
             >
-              <Typography>{n}</Typography>
+              <Typography
+                sx={{
+                  transition: 'all 0.2s',
+                  fontWeight: n === value ? 600 : 400,
+                  color: n === value ? 'text.primary' : 'text.secondary',
+                  fontSize: n === value ? 20 : 16,
+                }}
+              >
+                {n}
+              </Typography>
             </Box>
           ))}
           <Box sx={{ height: 40 }} />
         </Box>
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton onClick={() => adjust(step)}>
+      <IconButton size="small" onClick={() => adjust(step)}>
         <AddIcon />
       </IconButton>
     </Stack>
