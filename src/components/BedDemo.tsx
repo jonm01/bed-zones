@@ -90,6 +90,9 @@ export default function BedDemo() {
   const toggleSchedule = (side: Side, running: boolean) =>
     updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, running } }));
 
+  const setScheduleStart = (side: Side, nextStart: string) =>
+    updateZone(side, (z) => ({ ...z, schedule: { ...z.schedule, nextStart } }));
+
   const { mode, toggleMode } = React.useContext(ColorModeContext);
 
   const pageTitle = page === 'home' ? 'Home' : page === 'settings' ? 'Settings' : 'Schedule';
@@ -210,6 +213,12 @@ export default function BedDemo() {
               />
             }
             label="Schedule running"
+          />
+
+          <TextField
+            label="Starts at"
+            value={zones[editing].schedule?.nextStart ?? ''}
+            onChange={(e) => setScheduleStart(editing, e.target.value)}
           />
         </Stack>
       )}

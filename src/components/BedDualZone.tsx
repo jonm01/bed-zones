@@ -217,6 +217,7 @@ export function BedDualZone({
                 ? '0 2px 4px rgba(0,0,0,0.4)'
                 : '0 2px 4px rgba(0,0,0,0.15)',
               pointerEvents: 'none',
+              zIndex: 3,
             }}
           />
           <Box
