@@ -273,7 +273,7 @@ export function BedDualZone({
                 {name}
               </Typography>
 
-              {/* Power button */}
+              {/* Power button placed in the bottom-right corner for clarity */}
               {onPowerToggle && (
                 <IconButton
                   size="small"
@@ -283,7 +283,7 @@ export function BedDualZone({
                   }}
                   sx={{
                     position: 'absolute',
-                    top: 8,
+                    bottom: 8,
                     right: 10,
                     zIndex: 3,
                     bgcolor: alpha(theme.palette.background.default, 0.9),
