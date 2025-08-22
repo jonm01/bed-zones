@@ -127,6 +127,8 @@ export function BedDualZone({
       ? theme.palette.error.main
       : theme.palette.grey[400];
 
+  const pillowHeight = '15%';
+
   const editingSx = {
     boxShadow: `inset 0 0 0 2px ${ring}, inset 0 1px 2px rgba(0,0,0,0.12)`,
     '&::after': {
@@ -195,6 +197,7 @@ export function BedDualZone({
               top: 8,
               left: 8,
               right: 8,
+              height: pillowHeight,
               display: 'flex',
               gap: 4,
               pointerEvents: 'none',
@@ -204,12 +207,12 @@ export function BedDualZone({
             <Box
               sx={{
                 flex: 1,
-                height: '15%',
+                height: '100%',
                 borderRadius: '16px 8px 8px 16px',
                 background: `linear-gradient(180deg, ${alpha(
-                  theme.palette.background.paper,
-                  0.95,
-                )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                  theme.palette.grey[200],
+                  0.9,
+                )}, ${alpha(theme.palette.grey[600], 0.9)})`,
                 border: '1px solid',
                 borderColor: 'divider',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
@@ -218,12 +221,12 @@ export function BedDualZone({
             <Box
               sx={{
                 flex: 1,
-                height: '15%',
+                height: '100%',
                 borderRadius: '8px 16px 16px 8px',
                 background: `linear-gradient(180deg, ${alpha(
-                  theme.palette.background.paper,
-                  0.95,
-                )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                  theme.palette.grey[200],
+                  0.9,
+                )}, ${alpha(theme.palette.grey[600], 0.9)})`,
                 border: '1px solid',
                 borderColor: 'divider',
                 boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
@@ -281,10 +284,13 @@ export function BedDualZone({
           </Box>
           <Box
             sx={{
-              position: 'relative',
+              position: 'absolute',
+              top: `calc(8px + ${pillowHeight})`,
+              left: 8,
+              right: 8,
+              bottom: 8,
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              height: '100%',
               zIndex: 1,
             }}
           >
