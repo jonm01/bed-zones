@@ -187,6 +187,50 @@ export function BedDualZone({
             borderColor: 'divider',
           }}
         >
+          {/* pillows */}
+          <Box
+            aria-hidden
+            sx={{
+              position: 'absolute',
+              top: 8,
+              left: 8,
+              right: 8,
+              display: 'flex',
+              gap: 4,
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          >
+            <Box
+              sx={{
+                flex: 1,
+                height: '15%',
+                borderRadius: '16px 8px 8px 16px',
+                background: `linear-gradient(180deg, ${alpha(
+                  theme.palette.background.paper,
+                  0.95,
+                )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+              }}
+            />
+            <Box
+              sx={{
+                flex: 1,
+                height: '15%',
+                borderRadius: '8px 16px 16px 8px',
+                background: `linear-gradient(180deg, ${alpha(
+                  theme.palette.background.paper,
+                  0.95,
+                )}, ${alpha(theme.palette.grey[800], 0.9)})`,
+                border: '1px solid',
+                borderColor: 'divider',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.4)',
+              }}
+            />
+          </Box>
+
           <Box
             sx={{
               position: 'absolute',
