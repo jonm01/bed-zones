@@ -15,13 +15,12 @@ import {
   TextField,
 } from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
-import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import HomeIcon from '@mui/icons-material/Home';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import { toUnit, fromUnit } from '@/utils/temperature';
+import TemperatureControl from './TemperatureControl';
 
 type Side = 'left' | 'right';
 
@@ -136,18 +135,14 @@ export default function BedDemo() {
                 >
                   <PowerSettingsNewIcon />
                 </IconButton>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
-                    <RemoveIcon />
-                  </IconButton>
-                  <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
-                    {target}
-                    {`°${unit}`}
-                  </Typography>
-                  <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
-                    <AddIcon />
-                  </IconButton>
-                </Stack>
+                <TemperatureControl
+                  value={target}
+                  min={tempCfg.min}
+                  max={tempCfg.max}
+                  step={tempCfg.step}
+                  unit={unit}
+                  onChange={(v) => changeTemp(editing, v - target)}
+                />
               </Stack>
             );
           })()}
