@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Stack, IconButton, Typography, Box } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { TempUnit } from '@/utils/temperature';
@@ -183,23 +184,30 @@ export default function TemperatureControl({
     }, 100);
   };
 
+  const buttonSx = {
+    border: '1px solid',
+    borderColor: 'divider',
+    bgcolor: 'background.paper',
+    '&:hover': { bgcolor: 'action.hover' },
+  } as const;
+
   return (
     <Stack direction="row" spacing={1} alignItems="center">
-      <IconButton size="small" onClick={() => adjust(-step)}>
+      <IconButton size="small" onClick={() => adjust(-step)} sx={buttonSx}>
         <RemoveIcon />
       </IconButton>
       <Box
-        sx={{
+        sx={(theme) => ({
           position: 'relative',
           height: 120,
           width: 60,
-          borderRadius: 2,
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
+          borderRadius: 3,
+          border: `1px solid ${alpha(theme.palette.divider, 0.5)}`,
+          bgcolor: alpha(theme.palette.background.paper, 0.6),
+          backdropFilter: 'blur(4px)',
           overflow: 'hidden',
-          boxShadow: 1,
-        }}
+          boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.08)}`,
+        })}
       >
         <Box
           sx={{
@@ -260,7 +268,7 @@ export default function TemperatureControl({
         </Box>
       </Box>
       <Typography sx={{ fontSize: 20 }}>{`°${unit}`}</Typography>
-      <IconButton size="small" onClick={() => adjust(step)}>
+      <IconButton size="small" onClick={() => adjust(step)} sx={buttonSx}>
         <AddIcon />
       </IconButton>
     </Stack>
