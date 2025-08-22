@@ -66,7 +66,6 @@ export default function BedDemo() {
         right={zones.right}
         editingSide={editing}
         onSideClick={(s) => setEditing(s)}
-        labels={{ left: 'Left', right: 'Right' }}
         width={360}
         unit={unit}
       />

@@ -47,8 +47,8 @@ export interface BedDualZoneProps {
    * down responsively on smaller screens.
    */
   width?: number;
-  /** Optional labels displayed beneath each zone. */
-  labels?: { left?: string; right?: string };
+  /** Names displayed for each side; defaults to "Left" and "Right". */
+  sideNames?: { left?: string; right?: string };
   /**
    * Temperature unit used for display. Values in `left` and `right` are
    * assumed to be provided in Fahrenheit and will be converted if `unit` is
@@ -65,14 +65,16 @@ export function BedDualZone({
   editingSide = null,
   onSideClick,
   width = 360,
-  labels,
+  sideNames,
   unit = 'F',
   sx,
 }: BedDualZoneProps) {
   const theme = useTheme();
+  const leftName = sideNames?.left ?? 'Left';
+  const rightName = sideNames?.right ?? 'Right';
   const zones = [
-    { key: 'left' as const, state: left, label: labels?.left ?? 'Left' },
-    { key: 'right' as const, state: right, label: labels?.right ?? 'Right' },
+    { key: 'left' as const, state: left, name: leftName },
+    { key: 'right' as const, state: right, name: rightName },
   ];
 
   const ring = theme.palette.mode === 'dark' ? theme.palette.grey[200] : theme.palette.grey[900];
@@ -238,9 +240,9 @@ export function BedDualZone({
                 zIndex: 1,
               }}
             />
-            {zones.map(({ key, state }) => {
+            {zones.map(({ key, state, name }) => {
               const isEditing = editingSide === key;
-              const ariaLabel = `${key} side: ${state.mode}${isEditing ? ', editing' : ''}`;
+              const ariaLabel = `${name} side: ${state.mode}${isEditing ? ', editing' : ''}`;
               const scheduleLabel = state.schedule?.running
                 ? 'Schedule running'
                 : state.schedule?.nextStart
@@ -351,12 +353,13 @@ export function BedDualZone({
         </Box>
       </Box>
 
-      {(labels?.left || labels?.right) && (
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, fontSize: 12, color: 'text.secondary' }} aria-hidden>
-          <span>{labels?.left ?? ''}</span>
-          <span style={{ textAlign: 'right' }}>{labels?.right ?? ''}</span>
-        </Box>
-      )}
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', mt: 1, fontSize: 12, color: 'text.secondary' }}
+        aria-hidden
+      >
+        <span>{leftName}</span>
+        <span style={{ textAlign: 'right' }}>{rightName}</span>
+      </Box>
     </Box>
   );
 }
