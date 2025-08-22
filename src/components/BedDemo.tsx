@@ -1,9 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { Stack, Button, Tabs, Tab, FormControlLabel, Switch } from '@mui/material';
+import {
+  Stack,
+  Tabs,
+  Tab,
+  FormControlLabel,
+  Switch,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import { BedDualZone, ZoneState } from './BedDualZone';
-import RadialSlider from './RadialSlider';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
 import { ColorModeContext } from '@/theme';
 
 type Side = 'left' | 'right';
@@ -14,7 +24,6 @@ export default function BedDemo() {
       mode: 'cool',
       currentTemp: 72,
       targetTemp: 68,
-      schedule: { running: false, nextStart: '22:00' },
     },
     right: {
       mode: 'off',
@@ -27,20 +36,6 @@ export default function BedDemo() {
   const updateZone = (side: Side, updater: (z: ZoneState) => ZoneState) =>
     setZones((z) => ({ ...z, [side]: updater(z[side]) }));
 
-  const cycle = (z: ZoneState): ZoneState => {
-    const nextMode = z.mode === 'cool' ? 'heat' : z.mode === 'heat' ? 'off' : 'cool';
-    const targetTemp =
-      nextMode === 'cool' ? z.currentTemp - 4 : nextMode === 'heat' ? z.currentTemp + 4 : undefined;
-    return { ...z, mode: nextMode, targetTemp };
-  };
-
-  const toggleSchedule = (side: Side) =>
-    updateZone(side, (z) =>
-      z.schedule?.running
-        ? { ...z, schedule: { running: false, nextStart: '22:00' } }
-        : { ...z, schedule: { running: true } },
-    );
-
   const fToC = (f: number) => ((f - 32) * 5) / 9;
   const cToF = (c: number) => (c * 9) / 5 + 32;
   const toUnit = (t: number) => (unit === 'C' ? Math.round(fToC(t) * 10) / 10 : Math.round(t));
@@ -49,6 +44,33 @@ export default function BedDemo() {
   const tempCfg = unit === 'C'
     ? { min: 13, max: 43.5, mid: 28, step: 0.5 }
     : { min: 55, max: 110, mid: 82, step: 1 };
+
+  const changeTemp = (side: Side, delta: number) =>
+    updateZone(side, (z) => {
+      const currentTarget = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
+      let next = currentTarget + delta;
+      next = Math.min(tempCfg.max, Math.max(tempCfg.min, next));
+      const nextF = fromUnit(next);
+      const mode =
+        z.mode === 'off'
+          ? z.mode
+          : nextF > z.currentTemp
+          ? 'heat'
+          : nextF < z.currentTemp
+          ? 'cool'
+          : 'off';
+      return { ...z, targetTemp: nextF, mode };
+    });
+
+  const togglePower = (side: Side) =>
+    updateZone(side, (z) => {
+      if (z.mode === 'off') {
+        const target = z.targetTemp ?? z.currentTemp;
+        const mode = target > z.currentTemp ? 'heat' : target < z.currentTemp ? 'cool' : 'off';
+        return { ...z, mode };
+      }
+      return { ...z, mode: 'off' };
+    });
 
   const { mode, toggleMode } = React.useContext(ColorModeContext);
 
@@ -90,28 +112,28 @@ export default function BedDemo() {
 
       {(() => {
         const z = zones[editing];
-        const current = toUnit(z.currentTemp);
         const target = toUnit(z.targetTemp ?? fromUnit(tempCfg.mid));
         return (
-          <RadialSlider
-            value={target}
-            current={current}
-            min={tempCfg.min}
-            max={tempCfg.max}
-            step={tempCfg.step}
-            unit={unit}
-            mode={z.mode}
-            onChange={(val) =>
-              updateZone(editing, (prev) => ({ ...prev, targetTemp: fromUnit(val) }))
-            }
-          />
+          <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
+            <IconButton onClick={() => changeTemp(editing, -tempCfg.step)}>
+              <RemoveIcon />
+            </IconButton>
+            <Typography sx={{ fontSize: 24, width: 72, textAlign: 'center' }}>
+              {target}
+              {`°${unit}`}
+            </Typography>
+            <IconButton onClick={() => changeTemp(editing, tempCfg.step)}>
+              <AddIcon />
+            </IconButton>
+            <IconButton
+              color={z.mode === 'off' ? 'default' : 'secondary'}
+              onClick={() => togglePower(editing)}
+            >
+              <PowerSettingsNewIcon />
+            </IconButton>
+          </Stack>
         );
       })()}
-
-      <Stack direction="row" spacing={1}>
-        <Button onClick={() => updateZone(editing, cycle)}>Cycle Mode</Button>
-        <Button onClick={() => toggleSchedule(editing)}>Toggle Schedule</Button>
-      </Stack>
     </Stack>
   );
 }
